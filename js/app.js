@@ -36,6 +36,7 @@ function initApp() {
     initTheme();
     buildKnowledgeIndex();
     initKnowledgeIndexUI();
+    initKnowledgePanelUI();
     
     // 监听默写模式切换
     document.getElementById('reciteModeToggle').addEventListener('change', function(e) {
@@ -60,6 +61,7 @@ function buildKnowledgeIndex() {
     const terms = new Set();
     Object.keys(knowledgeBase || {}).forEach(k => terms.add(k));
     (pmbokData || []).forEach(area => {
+        // 处理 ITTO 过程
         (area.processes || []).forEach(process => {
             ['i', 't', 'o'].forEach(typeKey => {
                 (process[typeKey] || []).forEach(item => {
@@ -67,6 +69,18 @@ function buildKnowledgeIndex() {
                     const cleanItem = text.replace(/\(.*?\)/g, '').replace(/（.*?）/g, '').trim();
                     if (cleanItem) terms.add(cleanItem);
                 });
+            });
+        });
+        // 处理 核心考点 模式
+        (area.knowledgePoints || []).forEach(point => {
+            (point.terms || []).forEach(t => {
+                const s = (t || '').toString().trim();
+                if (s) terms.add(s);
+            });
+            (point.content || []).forEach(item => {
+                const text = (item || '').toString().replace('⭐', '');
+                const cleanItem = text.replace(/\(.*?\)/g, '').replace(/（.*?）/g, '').trim();
+                if (cleanItem) terms.add(cleanItem);
             });
         });
     });
@@ -129,6 +143,41 @@ function renderKnowledgeIndexList(query) {
     });
 }
 
+function initKnowledgePanelUI() {
+    const overlay = document.getElementById('knowledge-panel-overlay');
+    const closeBtn = document.getElementById('knowledge-panel-close');
+
+    if (overlay) overlay.addEventListener('click', closeKnowledgePanel);
+    if (closeBtn) closeBtn.addEventListener('click', closeKnowledgePanel);
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeKnowledgePanel();
+    });
+}
+
+function openKnowledgePanel(title, html) {
+    const overlay = document.getElementById('knowledge-panel-overlay');
+    const panel = document.getElementById('knowledge-panel');
+    const titleEl = document.getElementById('knowledge-panel-title');
+    const contentEl = document.getElementById('knowledge-panel-content');
+
+    if (!overlay || !panel || !titleEl || !contentEl) return false;
+
+    titleEl.innerText = title || '知识点';
+    contentEl.innerHTML = html || '';
+    overlay.classList.remove('hidden');
+    panel.classList.remove('translate-x-full');
+    return true;
+}
+
+function closeKnowledgePanel() {
+    const overlay = document.getElementById('knowledge-panel-overlay');
+    const panel = document.getElementById('knowledge-panel');
+    if (!overlay || !panel) return;
+    overlay.classList.add('hidden');
+    panel.classList.add('translate-x-full');
+}
+
 // 初始化主题
 function initTheme() {
     const savedTheme = localStorage.getItem('ruankao-theme') || 'light';
@@ -139,19 +188,25 @@ function initTheme() {
 // 渲染左侧导航
 function renderSidebar() {
     const sidebarNav = document.getElementById('sidebar-nav');
-    sidebarNav.innerHTML = pmbokData.map(area => `
-        <li onclick="switchArea('${area.id}')">
-            <a id="nav-${area.id}" class="flex items-center justify-between py-3 rounded-xl ${area.id === currentAreaId ? 'active' : ''}">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-lg bg-base-200 flex items-center justify-center">
-                        <i class="fa-solid ${area.icon} text-sm"></i>
+    sidebarNav.innerHTML = pmbokData.map(area => {
+        const count = area.type === 'knowledge' 
+            ? (area.knowledgePoints ? area.knowledgePoints.length : 0) 
+            : (area.processes ? area.processes.length : 0);
+            
+        return `
+            <li onclick="switchArea('${area.id}')">
+                <a id="nav-${area.id}" class="flex items-center justify-between py-3 rounded-xl ${area.id === currentAreaId ? 'active' : ''}">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-base-200 flex items-center justify-center">
+                            <i class="fa-solid ${area.icon} text-sm"></i>
+                        </div>
+                        <span class="text-sm font-bold">${area.name}</span>
                     </div>
-                    <span class="text-sm font-bold">${area.name}</span>
-                </div>
-                <span class="badge badge-sm badge-ghost opacity-50 font-black">${area.processCount}</span>
-            </a>
-        </li>
-    `).join('');
+                    <span class="badge badge-sm badge-ghost opacity-50 font-black">${count}</span>
+                </a>
+            </li>
+        `;
+    }).join('');
 }
 
 // 切换管理领域
@@ -170,6 +225,7 @@ function switchArea(areaId) {
 function renderArea(areaId) {
     const area = pmbokData.find(a => a.id === areaId);
     const container = document.getElementById('processes-container');
+    const guideCard = document.getElementById('area-guide-card');
     
     // 更新头部信息
     document.getElementById('area-title').innerText = area.name;
@@ -180,66 +236,500 @@ function renderArea(areaId) {
     // 更新进度
     updateProgress();
 
-    // 渲染过程卡片
-    container.innerHTML = area.processes.map((process, index) => `
-        <div id="card-${process.id}" class="card bg-base-100 shadow-xl border border-base-300 animate-slide-up" style="animation-delay: ${index * 0.1}s">
-            <!-- 卡片头部 -->
-            <div class="card-body p-0">
-                <div class="px-6 py-5 bg-base-200/30 border-b border-base-300 flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <div class="badge badge-outline badge-md font-black opacity-50">${process.id}</div>
-                        <h3 class="text-lg font-black tracking-tight">${process.name}</h3>
-                        <div class="badge badge-primary badge-outline text-[10px] font-bold uppercase">${process.group}</div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div id="stats-${process.id}" class="hidden recitation-mode-only text-xs font-black mr-2"></div>
-                        <div class="tooltip tooltip-left" data-tip="${masteredProcesses.has(process.id) ? '取消掌握' : '标记已掌握'}">
-                            <button onclick="toggleMastery('${process.id}', '${areaId}')" 
-                                    class="btn btn-circle btn-sm ${masteredProcesses.has(process.id) ? 'btn-success text-white' : 'btn-ghost border-base-300'}">
-                                <i class="fa-solid fa-check"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- ITTO 核心区 -->
-                <div class="p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    ${renderIttoSection(process, 'i', '输入 (Inputs)', 'I', 'blue', 'fa-solid fa-arrow-right-to-bracket')}
-                    ${renderIttoSection(process, 't', '工具与技术 (T&T)', 'T', 'emerald', 'fa-solid fa-screwdriver-wrench')}
-                    ${renderIttoSection(process, 'o', '输出 (Outputs)', 'O', 'orange', 'fa-solid fa-arrow-right-from-bracket')}
-                </div>
+    // 渲染卡片 (适配两种模式)
+    if (area.type === 'knowledge') {
+        if (area.id === 'pm-init') {
+            if (guideCard) guideCard.classList.add('hidden');
+            container.innerHTML = renderPmInitDashboard(area);
+            return;
+        }
+        if (guideCard) guideCard.classList.remove('hidden');
+        const hasKnowledgeEntry = (term) => {
+            if (!term) return false;
+            return Object.prototype.hasOwnProperty.call(knowledgeBase, term);
+        };
 
-                <!-- 默写操作区 (仅在默写模式显示) -->
-                <div class="px-6 py-4 recite-actions gap-4 justify-end recitation-mode-only hidden">
-                    <button onclick="resetRecitation('${process.id}')" class="btn btn-ghost btn-sm text-xs opacity-50 hover:opacity-100">
-                        <i class="fa-solid fa-rotate-left mr-2"></i> 重置清空
-                    </button>
-                    <button onclick="checkRecitation('${process.id}')" class="btn btn-primary btn-sm px-6 text-xs">
-                        <i class="fa-solid fa-paper-plane mr-2"></i> 提交审核
-                    </button>
+        const renderTermsRow = (terms) => {
+            if (!Array.isArray(terms) || !terms.length) return '';
+            const valid = terms.filter(t => hasKnowledgeEntry(t));
+            if (!valid.length) return '';
+            return `
+                <div class="flex flex-wrap gap-2 mb-5">
+                    ${valid.map(t => `
+                        <button class="btn btn-xs btn-outline" onclick="showKnowledge('${t}', event)">${t}</button>
+                    `).join('')}
                 </div>
+            `;
+        };
 
-                <!-- 考点提示 -->
-                ${process.exam ? `
-                <div class="px-6 py-4 bg-base-200/50 border-t border-base-300 recitation-hide">
-                    <div class="flex items-start gap-4">
-                        <div class="w-8 h-8 rounded-full bg-error/10 dark:bg-error/20 flex-none flex items-center justify-center">
-                            <i class="fa-solid fa-circle-exclamation text-error dark:text-red-400 text-xs"></i>
-                        </div>
-                        <div class="space-y-3 py-1">
-                            ${process.exam.map(e => `
-                                <div class="text-sm">
-                                    <span class="badge badge-error badge-sm text-white font-black mr-2">${e.type}</span>
-                                    <span class="text-base-content/80 leading-relaxed font-medium">${e.desc}</span>
+        const renderList = (items) => {
+            return `
+                <div class="space-y-3">
+                    ${(items || []).map(raw => {
+                        const s = (raw || '').toString();
+                        const isStar = s.includes('⭐');
+                        const text = s.replace('⭐', '');
+                        const badgeStyle = isStar ? `bg-primary/10 text-primary font-black px-1.5 rounded-md dark:bg-primary/20 dark:text-blue-300` : '';
+                        return `
+                            <div class="flex items-start gap-3">
+                                <div class="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-none opacity-40"></div>
+                                <div class="text-sm leading-relaxed text-base-content/80">
+                                    <span class="${badgeStyle}">${text}</span>
                                 </div>
-                            `).join('')}
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        };
+
+        const renderGrid = (items) => {
+            return `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    ${(items || []).map(raw => {
+                        const s = (raw || '').toString();
+                        const isStar = s.includes('⭐');
+                        const text = s.replace('⭐', '');
+                        const cleanItem = text.replace(/\(.*?\)/g, '').replace(/（.*?）/g, '').trim();
+                        const badgeStyle = isStar ? `bg-primary/10 text-primary font-black px-1.5 rounded-md dark:bg-primary/20 dark:text-blue-300` : '';
+                        const canOpen = hasKnowledgeEntry(cleanItem);
+
+                        const spanAttr = canOpen
+                            ? `onclick="showKnowledge('${cleanItem}', event)" class="${badgeStyle} cursor-help border-b border-dotted border-base-content/20 hover:border-primary/60 transition-colors"`
+                            : `class="${badgeStyle}"`;
+
+                        return `
+                            <div class="flex items-start gap-3 p-3 rounded-xl bg-base-200/50 border border-transparent hover:border-primary/20 transition-all group">
+                                <div class="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-none opacity-40 group-hover:opacity-100"></div>
+                                <span ${spanAttr}>${text}</span>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        };
+
+        container.innerHTML = area.knowledgePoints.map((point, index) => {
+            const layout = point.layout || 'grid';
+            const contentHtml = layout === 'list'
+                ? renderList(point.content)
+                : renderGrid(point.content);
+
+            return `
+                <div class="card bg-base-100 shadow-xl border border-base-300 animate-slide-up" style="animation-delay: ${index * 0.1}s">
+                    <div class="card-body p-0">
+                        <div class="px-6 py-5 bg-base-200/30 border-b border-base-300 flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="badge badge-outline badge-md font-black opacity-50">${point.id || (index + 1)}</div>
+                                <h3 class="text-lg font-black tracking-tight">${point.title}</h3>
+                            </div>
                         </div>
+
+                        <div class="p-6">
+                            ${renderTermsRow(point.terms)}
+                            ${contentHtml}
+                        </div>
+
+                        ${point.exam ? `
+                        <div class="px-6 py-4 bg-base-200/50 border-t border-base-300">
+                            <div class="flex items-start gap-4">
+                                <div class="w-8 h-8 rounded-full bg-error/10 flex-none flex items-center justify-center">
+                                    <i class="fa-solid fa-circle-exclamation text-error text-xs"></i>
+                                </div>
+                                <div class="space-y-2 py-1">
+                                    ${point.exam.map(e => `
+                                        <div class="text-sm text-base-content/80 font-medium">
+                                            <span class="badge badge-error badge-sm text-white font-black mr-2">考点</span>
+                                            ${e}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''}
                     </div>
                 </div>
-                ` : ''}
+            `;
+        }).join('');
+    } else {
+        if (guideCard) guideCard.classList.remove('hidden');
+        container.innerHTML = area.processes.map((process, index) => `
+            <div id="card-${process.id}" class="card bg-base-100 shadow-xl border border-base-300 animate-slide-up" style="animation-delay: ${index * 0.1}s">
+                <!-- 原有的 ITTO 渲染逻辑 -->
+                <div class="card-body p-0">
+                    <div class="px-6 py-5 bg-base-200/30 border-b border-base-300 flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="badge badge-outline badge-md font-black opacity-50">${process.id}</div>
+                            <h3 class="text-lg font-black tracking-tight">${process.name}</h3>
+                            <div class="badge badge-primary badge-outline text-[10px] font-bold uppercase">${process.group}</div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div id="stats-${process.id}" class="hidden recitation-mode-only text-xs font-black mr-2"></div>
+                            <div class="tooltip tooltip-left" data-tip="${masteredProcesses.has(process.id) ? '取消掌握' : '标记已掌握'}">
+                                <button onclick="toggleMastery('${process.id}', '${areaId}')" 
+                                        class="btn btn-circle btn-sm ${masteredProcesses.has(process.id) ? 'btn-success text-white' : 'btn-ghost border-base-300'}">
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- ITTO 核心区 -->
+                    <div class="p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        ${renderIttoSection(process, 'i', '输入 (Inputs)', 'I', 'blue', 'fa-solid fa-arrow-right-to-bracket')}
+                        ${renderIttoSection(process, 't', '工具与技术 (T&T)', 'T', 'emerald', 'fa-solid fa-screwdriver-wrench')}
+                        ${renderIttoSection(process, 'o', '输出 (Outputs)', 'O', 'orange', 'fa-solid fa-arrow-right-from-bracket')}
+                    </div>
+
+                    <!-- 考点提示 -->
+                    ${process.exam ? `
+                    <div class="px-6 py-4 bg-base-200/50 border-t border-base-300 recitation-hide">
+                        <div class="flex items-start gap-4">
+                            <div class="w-8 h-8 rounded-full bg-error/10 dark:bg-error/20 flex-none flex items-center justify-center">
+                                <i class="fa-solid fa-circle-exclamation text-error dark:text-red-400 text-xs"></i>
+                            </div>
+                            <div class="space-y-3 py-1">
+                                ${process.exam.map(e => `
+                                    <div class="text-sm">
+                                        <span class="badge badge-error badge-sm text-white font-black mr-2">${e.type}</span>
+                                        <span class="text-base-content/80 leading-relaxed font-medium">${e.desc}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+function renderPmInitDashboard(area) {
+    const esc = (s) => (s || '').toString().replace(/'/g, '&#39;');
+    const uniq = (arr) => Array.from(new Set((arr || []).filter(Boolean)));
+    const has = (term) => Object.prototype.hasOwnProperty.call(knowledgeBase, term);
+
+    const termChips = (terms, size) => {
+        const valid = uniq(terms).filter(has);
+        if (!valid.length) return '';
+        const btnClass = size === 'sm' ? 'btn btn-xs btn-outline' : 'btn btn-sm btn-outline';
+        return `
+            <div class="flex flex-wrap gap-2">
+                ${valid.map(t => `<button class="${btnClass}" onclick="showKnowledge('${esc(t)}', event)">${t}</button>`).join('')}
+            </div>
+        `;
+    };
+
+    const renderList = (items) => `
+        <div class="space-y-2">
+            ${(items || []).map(x => `
+                <div class="flex items-start gap-3">
+                    <div class="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-none opacity-50"></div>
+                    <div class="text-sm text-base-content/80 leading-relaxed">${x}</div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+
+    const renderExamList = (items) => {
+        const list = (items || []).filter(Boolean);
+        if (!list.length) return '';
+        return `
+            <div class="mt-4 p-4 rounded-2xl bg-base-200/40 border border-base-300">
+                <div class="flex items-center gap-2 mb-3">
+                    <div class="w-8 h-8 rounded-xl bg-error/10 flex items-center justify-center">
+                        <i class="fa-solid fa-circle-exclamation text-error text-xs"></i>
+                    </div>
+                    <div class="text-xs font-black uppercase tracking-widest opacity-60">高频考点</div>
+                </div>
+                <div class="space-y-2">
+                    ${list.map(e => `
+                        <div class="text-sm text-base-content/80 font-medium">
+                            <span class="badge badge-error badge-sm text-white font-black mr-2">考点</span>
+                            ${e}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    };
+
+    const points = Array.isArray(area.knowledgePoints) ? area.knowledgePoints : [];
+    const allTerms = uniq(points.flatMap(p => p.terms || []));
+
+    const stageFlowTerms = ['项目建议书', '可行性研究', '初步可行性研究', '详细可行性研究', '项目评估', '项目评估程序', '项目章程', '两必两预测', '有无比较法', '增量净效益法', '投资估算法'];
+
+    const dimensions = [
+        { title: '技术可行性', icon: 'fa-microchip', term: '技术可行性分析', bgClass: 'bg-primary/10', iconClass: 'text-primary', bullets: ['开发风险', '人力资源有效性', '技术能力可能性', '物资（产品）可用性'], pitfall: '易错：人力资源有效性属于技术可行性' },
+        { title: '经济可行性', icon: 'fa-coins', term: '经济可行性分析', bgClass: 'bg-warning/10', iconClass: 'text-warning', bullets: ['支出：一次性/非一次性', '收益：直接/间接/其他', '投资回报/回收', '敏感性分析'], pitfall: '易错：设备购置费属于一次性支出；敏感性分析属于经济可行性' },
+        { title: '社会效益', icon: 'fa-handshake-angle', term: '社会效益可行性分析', bgClass: 'bg-secondary/10', iconClass: 'text-secondary', bullets: ['内部：品牌/竞争力/创新/人员提升', '外部：公共/文化/环境/责任'], pitfall: '易错：人员提升、技术创新属于社会效益' },
+        { title: '运行环境', icon: 'fa-building', term: '运行环境可行性分析', bgClass: 'bg-accent/10', iconClass: 'text-accent', bullets: ['管理体制/方法/制度', '工作习惯与人员素质', '数据资源积累', '基础软硬件平台'], pitfall: '易错：管理体制、人员素质、数据积累属于运行环境' },
+        { title: '其他可行性', icon: 'fa-scale-balanced', term: '其他可行性分析', bgClass: 'bg-base-200', iconClass: 'text-base-content/70', bullets: ['法律可行性', '政策可行性', '合规边界与约束'], pitfall: '易错：把政策/法规约束误判为经济效益或技术能力' }
+    ];
+
+    const compareTable = `
+        <div class="overflow-x-auto">
+            <table class="table table-zebra">
+                <thead>
+                    <tr>
+                        <th class="w-40">对比项</th>
+                        <th>初步可行性研究</th>
+                        <th>详细可行性研究</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>地位</th>
+                        <td>可合并/可省略</td>
+                        <td><span class="badge badge-error badge-outline font-black">不可缺少</span></td>
+                    </tr>
+                    <tr>
+                        <th>深度</th>
+                        <td>资源占有少、研究细节较粗</td>
+                        <td>费时费力、调查分析更系统全面</td>
+                    </tr>
+                    <tr>
+                        <th>结论</th>
+                        <td>与详细可研结果基本一致</td>
+                        <td>作为评估与决策的核心依据</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    `;
+
+    const compareMethods = `
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="p-5 rounded-2xl border border-base-300 bg-base-200/20">
+                <div class="flex items-center gap-2 mb-3">
+                    <div class="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <i class="fa-solid fa-scale-unbalanced-flip text-primary text-sm"></i>
+                    </div>
+                    <div class="font-black">有无比较法（增量净效益法）</div>
+                </div>
+                ${renderList(['比较“有项目”与“无项目”的成本效益差异', '能更好剔除外部环境变化干扰', '结论更客观、更接近真实增量价值'])}
+                <div class="mt-4">${termChips(['有无比较法', '增量净效益法'], 'sm')}</div>
+            </div>
+            <div class="p-5 rounded-2xl border border-base-300 bg-base-200/20">
+                <div class="flex items-center gap-2 mb-3">
+                    <div class="w-8 h-8 rounded-xl bg-warning/10 flex items-center justify-center">
+                        <i class="fa-solid fa-clock-rotate-left text-warning text-sm"></i>
+                    </div>
+                    <div class="font-black">前后比较法</div>
+                </div>
+                ${renderList(['比较“实施前”与“实施后”', '易受外部环境变化影响', '通常不如有无比较法准确'])}
+                <div class="mt-4">${termChips(['前后比较法'], 'sm')}</div>
+            </div>
+        </div>
+    `;
+
+    const collapses = points.map((p, idx) => `
+        <div class="collapse collapse-arrow bg-base-100 border border-base-300 rounded-2xl">
+            <input type="checkbox" ${idx === 0 ? 'checked' : ''} />
+            <div class="collapse-title text-base font-black flex items-center gap-3">
+                <span class="badge badge-outline font-black opacity-60">${p.id || (idx + 1)}</span>
+                <span class="flex-1 min-w-0 truncate">${p.title || '未命名'}</span>
+            </div>
+            <div class="collapse-content">
+                <div class="pt-2 pb-5 space-y-4">
+                    ${termChips(p.terms || [], 'sm')}
+                    ${renderList((p.content || []).map(x => x.toString()))}
+                    ${renderExamList(p.exam || [])}
+                </div>
             </div>
         </div>
     `).join('');
+
+    const hero = `
+        <div class="card bg-base-100 border border-base-300 shadow-xl overflow-hidden">
+            <div class="p-6 lg:p-8 bg-gradient-to-br from-primary/10 via-base-100 to-warning/10">
+                <div class="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between">
+                    <div class="space-y-3">
+                        <div class="flex flex-wrap gap-2 items-center">
+                            <span class="badge badge-primary badge-outline font-black">第7章</span>
+                            <span class="badge badge-ghost font-black opacity-60">立项管理</span>
+                            <span class="badge badge-outline font-black opacity-60">选择题≈2分</span>
+                            <span class="badge badge-outline font-black opacity-60">案例★★</span>
+                        </div>
+                        <div class="text-2xl lg:text-3xl font-black tracking-tight">一图读懂：项目为什么能立项</div>
+                        <div class="text-sm text-base-content/70 leading-relaxed max-w-3xl">
+                            立项管理的本质是回答三个问题：<span class="font-black">值不值得做</span>、<span class="font-black">能不能做</span>、<span class="font-black">怎么做更划算</span>。
+                        </div>
+                        <div class="pt-1">${termChips(stageFlowTerms, 'sm')}</div>
+                    </div>
+                    <div class="stats shadow border border-base-300 bg-base-100">
+                        <div class="stat py-4">
+                            <div class="stat-title">必背</div>
+                            <div class="stat-value text-primary text-2xl">两必两预测</div>
+                            <div class="stat-desc">项目建议书核心内容</div>
+                        </div>
+                        <div class="stat py-4">
+                            <div class="stat-title">必记</div>
+                            <div class="stat-value text-error text-2xl">详可研不可少</div>
+                            <div class="stat-desc">初步可研可合并</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 p-5 rounded-2xl border border-base-300 bg-base-100/70">
+                    <div class="text-xs font-black uppercase tracking-widest opacity-60 mb-4">流程图</div>
+                    <ul class="steps steps-vertical lg:steps-horizontal w-full">
+                        <li class="step step-primary"><button class="btn btn-ghost btn-sm font-black" onclick="showKnowledge('项目建议书', event)">建议/立项申请</button></li>
+                        <li class="step step-primary"><button class="btn btn-ghost btn-sm font-black" onclick="showKnowledge('可行性研究', event)">可行性研究</button></li>
+                        <li class="step step-primary"><button class="btn btn-ghost btn-sm font-black" onclick="showKnowledge('项目评估', event)">评估</button></li>
+                        <li class="step step-primary"><span class="font-black">决策</span></li>
+                    </ul>
+                    <div class="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-3">
+                        <div class="p-4 rounded-2xl border border-base-300 bg-base-200/30">
+                            <div class="text-xs font-black opacity-60 mb-2">考题抓手</div>
+                            <div class="text-sm text-base-content/80">先记顺序，再抓“谁做/依据是什么/能否省略”</div>
+                        </div>
+                        <div class="p-4 rounded-2xl border border-base-300 bg-base-200/30">
+                            <div class="text-xs font-black opacity-60 mb-2">一眼辨错</div>
+                            <div class="text-sm text-base-content/80">看到“项目章程”出现在投资前阶段/评估依据中 → 多半是错</div>
+                        </div>
+                        <div class="p-4 rounded-2xl border border-base-300 bg-base-200/30">
+                            <div class="text-xs font-black opacity-60 mb-2">必背口诀</div>
+                            <div class="text-sm font-black tracking-tight">建议 → 可研(初/详) → 评估 → 决策</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const dimensionCards = `
+        <div class="card bg-base-100 border border-base-300 shadow-xl">
+            <div class="p-6 lg:p-8">
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <div class="text-xs font-black uppercase tracking-widest opacity-60">可行性研究</div>
+                        <div class="text-xl font-black tracking-tight mt-1">五大维度（做题就按它归类）</div>
+                    </div>
+                    <div class="badge badge-outline font-black opacity-60">技 / 经 / 社 / 运 / 其</div>
+                </div>
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                    ${dimensions.map(d => `
+                        <div class="p-5 rounded-2xl border border-base-300 bg-base-200/20 hover:bg-base-200/30 transition-colors">
+                            <div class="flex items-start justify-between gap-4">
+                                <div class="space-y-1">
+                                    <div class="font-black text-base">${d.title}</div>
+                                    <div class="text-xs opacity-60">${d.pitfall}</div>
+                                </div>
+                                <div class="w-10 h-10 rounded-2xl ${d.bgClass} flex items-center justify-center flex-none">
+                                    <i class="fa-solid ${d.icon} ${d.iconClass}"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                ${renderList(d.bullets)}
+                            </div>
+                            <div class="mt-4">
+                                ${termChips([d.term], 'sm')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+    `;
+
+    const compare = `
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <div class="card bg-base-100 border border-base-300 shadow-xl">
+                <div class="p-6 lg:p-8">
+                    <div class="flex items-center justify-between gap-4">
+                        <div>
+                            <div class="text-xs font-black uppercase tracking-widest opacity-60">对比表</div>
+                            <div class="text-xl font-black tracking-tight mt-1">初步 vs 详细（最常考）</div>
+                        </div>
+                        <div class="flex gap-2">
+                            ${termChips(['初步可行性研究', '详细可行性研究'], 'sm')}
+                        </div>
+                    </div>
+                    <div class="mt-5">${compareTable}</div>
+                </div>
+            </div>
+            <div class="card bg-base-100 border border-base-300 shadow-xl">
+                <div class="p-6 lg:p-8">
+                    <div class="flex items-center justify-between gap-4">
+                        <div>
+                            <div class="text-xs font-black uppercase tracking-widest opacity-60">方法题</div>
+                            <div class="text-xl font-black tracking-tight mt-1">有无比较法为什么更准确</div>
+                        </div>
+                    </div>
+                    <div class="mt-5">${compareMethods}</div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const notes = `
+        <div class="card bg-base-100 border border-base-300 shadow-xl">
+            <div class="p-6 lg:p-8">
+                <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+                    <div>
+                        <div class="text-xs font-black uppercase tracking-widest opacity-60">学习笔记</div>
+                        <div class="text-xl font-black tracking-tight mt-1">按“题目怎么问”来记</div>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="badge badge-outline font-black opacity-60">谁来做？</span>
+                        <span class="badge badge-outline font-black opacity-60">依据是什么？</span>
+                        <span class="badge badge-outline font-black opacity-60">哪些可省？</span>
+                        <span class="badge badge-outline font-black opacity-60">怎么归类？</span>
+                    </div>
+                </div>
+                <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    <div class="p-5 rounded-2xl border border-base-300 bg-base-200/20">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-9 h-9 rounded-2xl bg-primary/10 flex items-center justify-center">
+                                <i class="fa-solid fa-user-check text-primary"></i>
+                            </div>
+                            <div class="font-black">谁来做</div>
+                        </div>
+                        ${renderList(['项目建议书：建设单位提交', '可行性研究：建设方组织论证', '项目评估：第三方（国家/银行/机构）', '项目章程：发起人/赞助人发布'])}
+                        <div class="mt-4">${termChips(['项目建议书', '项目评估', '项目章程'], 'sm')}</div>
+                    </div>
+                    <div class="p-5 rounded-2xl border border-base-300 bg-base-200/20">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-9 h-9 rounded-2xl bg-warning/10 flex items-center justify-center">
+                                <i class="fa-solid fa-triangle-exclamation text-warning"></i>
+                            </div>
+                            <div class="font-black">高频避坑</div>
+                        </div>
+                        ${renderList(['投资前阶段不含“制定项目章程”', '详可研不可缺少；初步可合并', '人力资源有效性→技术可行性', '管理体制/人员素质/数据积累→运行环境'])}
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <div class="text-sm font-black mb-3">章节细节（展开即是答案）</div>
+                    <div class="space-y-4">${collapses}</div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    return `
+        <div class="space-y-8">
+            ${hero}
+            ${dimensionCards}
+            ${compare}
+            ${notes}
+            <div class="card bg-base-100 border border-base-300 shadow-xl">
+                <div class="p-6 lg:p-8">
+                    <div class="flex items-center justify-between gap-4">
+                        <div>
+                            <div class="text-xs font-black uppercase tracking-widest opacity-60">快速导航</div>
+                            <div class="text-xl font-black tracking-tight mt-1">本章常用术语（点一个就能学）</div>
+                        </div>
+                    </div>
+                    <div class="mt-5">
+                        ${termChips(allTerms, 'sm')}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 // 渲染单个 ITTO 区块
@@ -254,7 +744,10 @@ function renderIttoSection(process, typeKey, titleStr, iconChar, theme, listIcon
             const cleanItem = text.replace(/\(.*?\)/g, '').replace(/（.*?）/g, '').trim();
             
             const badgeStyle = isStar ? `bg-primary/10 text-primary font-black px-1.5 rounded-md dark:bg-primary/20 dark:text-blue-300` : '';
-            const interactionAttr = `onclick="showKnowledge('${cleanItem}', event)" class="${badgeStyle} cursor-help border-b-2 border-dotted border-primary/30 hover:border-primary/60 dark:border-blue-400/50"`;
+            const canOpen = Object.prototype.hasOwnProperty.call(knowledgeBase, cleanItem);
+            const interactionAttr = canOpen
+                ? `onclick="showKnowledge('${cleanItem}', event)" class="${badgeStyle} cursor-help border-b-2 border-dotted border-primary/30 hover:border-primary/60 dark:border-blue-400/50"`
+                : `class="${badgeStyle}"`;
             
             return `
                 <li class="flex items-start gap-3 group">
@@ -315,9 +808,14 @@ function toggleMastery(processId, areaId) {
 }
 
 function updateProgress() {
-    const totalProcesses = pmbokData.reduce((acc, area) => acc + area.processes.length, 0);
+    const totalProcesses = pmbokData.reduce((acc, area) => {
+        const count = area.type === 'knowledge' 
+            ? (area.knowledgePoints ? area.knowledgePoints.length : 0) 
+            : (area.processes ? area.processes.length : 0);
+        return acc + count;
+    }, 0);
     const masteredCount = masteredProcesses.size;
-    const percentage = Math.round((masteredCount / totalProcesses) * 100);
+    const percentage = totalProcesses > 0 ? Math.round((masteredCount / totalProcesses) * 100) : 0;
     
     const progress = document.getElementById('mastery-progress');
     const text = document.getElementById('mastery-text');
@@ -328,44 +826,48 @@ function updateProgress() {
 
 // 知识延伸弹窗逻辑
 window.showKnowledge = function(term, event) {
-    event.stopPropagation();
-    const data = getKnowledgeData(term);
+    if (event && typeof event.stopPropagation === 'function') event.stopPropagation();
+
+    const t = (term || '').toString().trim();
+    if (!t) return;
+
+    const data = getKnowledgeData(t);
     const { examPoints, occurrences } = splitKnowledgeExam(data.exam || []);
     const meta = data.meta || {};
 
-    const modal = document.getElementById('knowledge-modal');
-    const content = document.getElementById('knowledge-content');
-
     const metaBadges = [
         meta.categoryLabel ? `<span class="badge badge-outline">${meta.categoryLabel}</span>` : '',
-        typeof meta.total === 'number' ? `<span class="badge badge-primary badge-outline">出现 ${meta.total} 次</span>` : ''
+        typeof meta.total === 'number' && meta.total > 0 ? `<span class="badge badge-primary badge-outline">出现 ${meta.total} 次</span>` : ''
     ].filter(Boolean).join('');
 
-    const metaLine = (typeof meta.total === 'number' && meta.total > 0)
+    const metaLineParts = (typeof meta.total === 'number' && meta.total > 0)
         ? [
-            `常见角色：${meta.typeHint || '输入/工具与技术/输出'}`,
+            meta.typeHint ? `常见角色：${meta.typeHint}` : '',
             meta.groupHint ? `常见过程组：${meta.groupHint}` : '',
             meta.areaHint ? `常见领域：${meta.areaHint}` : ''
-        ].filter(Boolean).join(' ｜ ')
-        : '常见角色：需要结合具体过程判断';
+        ].filter(Boolean)
+        : [];
 
-    let html = `
-        <section class="space-y-4">
-            <div class="flex items-start gap-4">
-                <div class="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center flex-none">
-                    <i class="fa-solid fa-book-open text-primary text-base"></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex flex-wrap items-center gap-2">
-                        <h3 class="text-xl lg:text-2xl font-black tracking-tight">${term}</h3>
-                        ${metaBadges}
-                    </div>
-                    <div class="text-xs text-base-content/70 mt-1">${metaLine}</div>
-                </div>
+    const metaLine = metaLineParts.length
+        ? `<div class="text-xs text-base-content/60 mt-2">${metaLineParts.join(' ｜ ')}</div>`
+        : '';
+
+    const points = Array.isArray(data.points) ? data.points : [];
+    const recite = Array.isArray(data.recite) ? data.recite : [];
+    const exams = Array.isArray(examPoints) ? examPoints : [];
+
+    const empty = !points.length && !recite.length && !exams.length && !(occurrences || []).length;
+    const safePoints = empty ? [`暂无「${t}」的专门词条，可通过“知识点索引”检索相近术语学习。`] : points;
+
+    const html = `
+        <section>
+            <div class="flex flex-wrap items-center gap-2">
+                ${metaBadges}
             </div>
+            ${metaLine}
         </section>
 
-        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-5">
             <div class="border border-base-300 rounded-2xl p-5 bg-base-200/20">
                 <div class="flex items-center gap-2 mb-4">
                     <div class="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -374,7 +876,7 @@ window.showKnowledge = function(term, event) {
                     <h4 class="text-xs font-black uppercase tracking-widest opacity-60">了解要点</h4>
                 </div>
                 <ul class="space-y-3 pl-1">
-                    ${(data.points || []).map(p => `
+                    ${(safePoints || []).map(p => `
                         <li class="text-sm leading-relaxed flex items-start gap-3">
                             <div class="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-none"></div>
                             <span class="text-base-content/80">${p}</span>
@@ -390,16 +892,16 @@ window.showKnowledge = function(term, event) {
                     <h4 class="text-xs font-black uppercase tracking-widest opacity-60">背诵重点</h4>
                 </div>
                 <ul class="space-y-3 pl-1">
-                    ${(data.recite || []).map(p => `
+                    ${(recite || []).length ? (recite || []).map(p => `
                         <li class="text-sm leading-relaxed flex items-start gap-3">
                             <i class="fa-solid fa-star text-warning text-[10px] mt-1.5 flex-none"></i>
                             <span class="text-base-content/80">${p}</span>
-                        </li>`).join('')}
+                        </li>`).join('') : `<li class="text-sm opacity-60">暂无</li>`}
                 </ul>
             </div>
         </section>
 
-        <section class="pt-2">
+        <section class="pt-1">
             <div class="flex items-center gap-2 mb-4">
                 <div class="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
                     <i class="fa-solid fa-bullseye text-primary text-sm"></i>
@@ -407,7 +909,7 @@ window.showKnowledge = function(term, event) {
                 <h4 class="text-xs font-black uppercase tracking-widest opacity-60">高频考点</h4>
             </div>
             <div class="space-y-3">
-                ${(examPoints.length ? examPoints : ['暂无高频考点条目（可通过出现位置回到过程上下文学习）。']).map(p => `
+                ${(exams && exams.length ? exams : ['暂无']).map(p => `
                     <div class="status-box-primary border border-primary/10 rounded-2xl p-4 text-sm flex items-start gap-3 shadow-none">
                         <i class="fa-solid fa-circle-check mt-1"></i>
                         <span class="font-medium">${p}</span>
@@ -415,28 +917,33 @@ window.showKnowledge = function(term, event) {
             </div>
         </section>
 
-        <section class="pt-2">
-            <div class="flex items-center gap-2 mb-4">
-                <div class="w-8 h-8 rounded-xl bg-base-200 flex items-center justify-center">
-                    <i class="fa-solid fa-location-dot text-base-content/70 text-sm"></i>
+        ${(occurrences || []).length ? `
+            <section class="pt-1">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-8 h-8 rounded-xl bg-base-200 flex items-center justify-center">
+                        <i class="fa-solid fa-location-dot text-base-content/70 text-sm"></i>
+                    </div>
+                    <h4 class="text-xs font-black uppercase tracking-widest opacity-60">出现位置</h4>
                 </div>
-                <h4 class="text-xs font-black uppercase tracking-widest opacity-60">出现位置</h4>
-            </div>
-            <div class="border border-base-300 rounded-2xl p-4 bg-base-200/20">
-                ${occurrences.length ? `
+                <div class="border border-base-300 rounded-2xl p-4 bg-base-200/20">
                     <ul class="space-y-2 text-sm">
-                        ${occurrences.map(x => `
+                        ${(occurrences || []).map(x => `
                             <li class="flex items-start gap-3">
                                 <span class="badge badge-ghost badge-sm font-black opacity-60 mt-0.5">ITTO</span>
                                 <span class="text-base-content/80">${x}</span>
                             </li>
                         `).join('')}
                     </ul>
-                ` : `<div class="text-sm text-base-content/60">当前数据中暂未定位到该术语的 ITTO 出现位置。</div>`}
-            </div>
-        </section>
+                </div>
+            </section>
+        ` : ''}
     `;
 
+    if (openKnowledgePanel(t, html)) return;
+
+    const modal = document.getElementById('knowledge-modal');
+    const content = document.getElementById('knowledge-content');
+    if (!modal || !content) return;
     content.innerHTML = html;
     modal.showModal();
 };
@@ -596,7 +1103,6 @@ function getCategoryCommonPoints(category, term) {
     if (key === 'eef') {
         return [
             '定义：来自组织外部或内部环境的条件，对项目产生约束或提供条件。',
-            '通常来自组织外部或内部环境，对项目产生约束或提供条件。',
             '常见维度：组织文化与结构、市场条件、法规政策、基础设施与资源可得性等。',
             '在 ITTO 中常作为输入，帮助制定计划、评估影响或约束决策边界。',
             '记忆抓手：EEF 是“环境”，项目团队一般<strong>不能直接更新</strong>它，只能识别并适配。',
@@ -607,7 +1113,6 @@ function getCategoryCommonPoints(category, term) {
     if (key === 'opa') {
         return [
             '定义：组织沉淀的过程、模板、政策、知识与经验资产，为项目提供“可复用的做法”。',
-            '组织沉淀的过程、模板、政策、知识与经验资产，为项目提供“可复用的做法”。',
             '常见内容：流程与规范、模板/表单、历史数据库、经验教训、配置管理知识库等。',
             '在 ITTO 中既常作为输入（复用组织资产），也可能作为输出被更新（沉淀经验）。',
             '记忆抓手：OPA 往往会在项目执行/收尾阶段被<strong>更新并沉淀</strong>，用于“反哺组织”。',
@@ -618,7 +1123,6 @@ function getCategoryCommonPoints(category, term) {
     if (key === 'plan') {
         return [
             '定义：用于规定“怎么做、谁来做、做到什么程度”，属于项目管理计划或其子计划。',
-            '属于项目管理计划或其子计划，用于规定“怎么做、谁来做、做到什么程度”。',
             '与“项目文件”区别：计划偏<strong>规则与策略</strong>；文件偏<strong>记录与产出</strong>。',
             '常见结构：方法与流程、角色与职责、阈值与标准、沟通与审批机制。',
             '变更要点：计划通常受配置管理与整体变更控制影响，调整需要更严格的审批与版本管理。'
@@ -628,7 +1132,6 @@ function getCategoryCommonPoints(category, term) {
     if (key === 'baseline') {
         return [
             '定义：经批准的版本，用于后续对比与控制，回答“现在偏离了吗？偏了多少？”。',
-            '基准是经批准的版本，用于后续对比与控制，回答“现在偏离了吗？偏了多少？”。',
             '常见：范围基准 / 进度基准 / 成本基准；基准不是随便改，调整通常需要走变更流程。',
             '在监控过程组中，基准是偏差分析与预测的“对比尺”。',
             '做题抓手：题干出现“与基准比较”“偏差分析”“控制范围/进度/成本”，通常指向监控类过程与数据分析。'
@@ -638,7 +1141,6 @@ function getCategoryCommonPoints(category, term) {
     if (key === 'register') {
         return [
             '定义：登记册用于结构化记录某一类信息，并在项目全生命周期持续维护。',
-            '登记册用于结构化记录某一类信息，并在项目全生命周期持续维护。',
             '典型字段：条目、状态、责任人、触发条件、更新时间、关联文档/决策。',
             '常见做题口径：登记册通常“产生于某过程”，后续过程不断更新；题干出现“登记、维护、跟踪”，优先联想到登记册。',
             '背诵抓手：登记册更像“清单 + 状态”，强调持续更新与责任人。'
@@ -648,7 +1150,6 @@ function getCategoryCommonPoints(category, term) {
     if (key === 'log') {
         return [
             '定义：日志强调“动态记录”，用于跟踪随时间变化的信息与决策依据。',
-            '日志强调“动态记录”，用于跟踪随时间变化的信息与决策依据。',
             '典型字段：日期、事件/事实、影响、责任人、处理动作、结果与关闭条件。',
             '常见：假设日志、问题日志、变更日志等；题干出现“记录假设/记录问题/跟踪处理”，优先联想到日志。',
             '背诵抓手：日志 = 时间线 + 状态变化 + 责任人/处理动作。'
@@ -658,7 +1159,6 @@ function getCategoryCommonPoints(category, term) {
     if (key === 'matrix') {
         return [
             '定义：矩阵用于“映射关系”，把两个或多个维度建立可追踪链接。',
-            '矩阵用于“映射关系”，典型用途是把两个维度建立可追踪链接。',
             '常见：需求跟踪矩阵（需求 ⇄ 交付物/测试/验收标准），责任分配矩阵（工作 ⇄ 角色）。',
             '做题抓手：题干出现“追踪”“对应”“关联”“覆盖”，通常需要矩阵类工件。'
         ];
@@ -727,7 +1227,6 @@ function getCategoryCommonPoints(category, term) {
     if (key === 'report') {
         return [
             '定义：报告面向干系人，用于传达汇总后的状态、偏差、预测与决策建议。',
-            '报告面向干系人，用于传达汇总后的状态、偏差、预测与决策建议。',
             '与“数据/信息”区分：报告一般是<strong>对信息的整理呈现</strong>，偏决策与沟通。',
             '做题抓手：题干出现“向管理层汇报/发布报告/例会汇报材料”，优先想到报告。'
         ];
@@ -829,11 +1328,7 @@ function getCategoryCommonPoints(category, term) {
         ];
     }
 
-    return [
-        '建议学习框架：定义（是什么）→作用（为什么）→位置（何时出现/用于哪个过程）→易混点（和谁区分）。',
-        '做题抓手：先看它属于输入/工具/输出，再结合过程组（启动/规划/执行/监控/收尾）判断答案。',
-        '本工具会给出它在 49 个过程中的出现位置，用“过程号 + 过程名 + ITTO类别”绑定记忆。'
-    ];
+    return [];
 }
 
 function getCommonConfusions(category, term) {
@@ -882,13 +1377,11 @@ function getCommonConfusions(category, term) {
 function getReciteHints(category, term, typeHint, total) {
     const key = category.key;
     const t = term || '';
-    const typeLine = total ? `位置抓手：它更常出现在【${typeHint || 'ITTO'}】。` : '位置抓手：先通过出现位置确认它通常属于输入/工具/输出哪类。';
+    const hints = [];
 
-    const hints = [
-        typeLine,
-        '默写规则：系统会忽略空格、标点、括号备注（含中英文括号），只比对核心术语。',
-        '背诵方法：把术语和“典型过程号 + 过程名 + ITTO类别”绑定记忆（见下方出现清单）。'
-    ];
+    if (total > 0) {
+        hints.push(`位置抓手：它在 ITTO 中主要作为【${typeHint || '输入/工具/输出'}】出现。`);
+    }
 
     if (key === 'plan') {
         hints.push('口诀：计划 = 规则/策略/流程；题干出现“怎么管理、按什么标准做”先想计划。');
@@ -936,7 +1429,6 @@ function getExamHints(category, term, total, occurrences) {
         lines.push('高频辨析：数据→信息→报告，题干问“给干系人看”通常选报告。');
     }
 
-    if (!lines.length) lines.push('建议考法：先定位出现过程，再结合过程组判断它在题干中的角色（输入/工具/输出）。');
     if (!total) return lines;
 
     const hot = occurrences.slice(0, 3).map(o => `${o.processId} ${o.processName}`).join('、');
@@ -949,18 +1441,9 @@ function ensureMinimumKnowledgeDepth(data, term, category, total) {
     const recite = Array.isArray(data.recite) ? [...data.recite] : [];
     const exam = Array.isArray(data.exam) ? [...data.exam] : [];
 
-    while (points.length < 8) {
-        points.push('补充学习法：把它放回“出现位置”的过程上下文里，回答：它为什么是输入/工具/输出？');
-    }
-
-    while (recite.length < 5) {
-        recite.push('背诵建议：用“过程号 + 过程名 + ITTO类别”绑定记忆，并用一两句解释其作用。');
-    }
-
-    const { examPoints } = splitKnowledgeExam(exam);
-    if (examPoints.length < 4) {
-        exam.unshift('常考：题干如果强调“目的/作用/负责方/是否需要审批”，先回到定义与流程判断。');
-        exam.unshift('常考：区分同类工件（计划/基准/文件/登记册/日志/报告），抓“用途与是否可更新”。');
+    // 移除无意义的凑数逻辑，保持内容精简和专业
+    if (points.length === 0) {
+        points.push(`<strong>${term}</strong> 是项目管理中的重要概念，请结合其在具体过程中的上下文进行理解。`);
     }
 
     return { ...data, points, recite, exam };

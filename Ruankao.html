@@ -48,6 +48,24 @@
         </form>
     </dialog>
 
+    <div id="knowledge-panel-overlay" class="fixed inset-0 bg-black/40 hidden z-40"></div>
+    <aside id="knowledge-panel" class="fixed top-0 right-0 h-full w-full sm:w-[420px] lg:w-[520px] bg-base-100 border-l border-base-300 shadow-2xl translate-x-full transition-transform duration-200 z-50 flex flex-col">
+        <div class="bg-base-100 px-5 py-4 border-b border-base-300 flex items-center justify-between gap-4">
+            <div class="min-w-0">
+                <div class="text-[10px] font-black opacity-50 tracking-widest uppercase">学习面板</div>
+                <div id="knowledge-panel-title" class="text-lg font-black truncate">知识点</div>
+            </div>
+            <button id="knowledge-panel-close" class="btn btn-sm btn-circle btn-ghost" aria-label="关闭">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div id="knowledge-panel-content" class="p-5 space-y-6 overflow-y-auto custom-scrollbar flex-1"></div>
+        <div class="bg-base-200 px-5 py-3 text-[11px] text-base-content/50 border-t border-base-300 flex items-center justify-between">
+            <span>提示：可在右侧持续查看，不打断阅读</span>
+            <span class="badge badge-sm badge-outline badge-primary">知识延伸</span>
+        </div>
+    </aside>
+
     <!-- 抽屉布局 -->
     <div class="drawer lg:drawer-open w-full h-screen">
         <input id="my-drawer" type="checkbox" class="drawer-toggle" />
@@ -110,7 +128,7 @@
             <!-- 内容区 -->
             <main class="p-4 lg:p-8 flex-none">
                 <!-- 知识导引 -->
-                <div class="card bg-base-100 shadow-xl border border-base-300 mb-10 overflow-hidden recitation-hide">
+                <div id="area-guide-card" class="card bg-base-100 shadow-xl border border-base-300 mb-10 overflow-hidden recitation-hide">
                     <div class="card-body p-0">
                         <div class="grid grid-cols-1 md:grid-cols-2">
                             <div class="p-6 border-b md:border-b-0 md:border-r border-base-300 relative">
