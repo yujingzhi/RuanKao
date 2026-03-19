@@ -1,5 +1,5 @@
 // 知识延伸库
-const knowledgeBase = {
+export const knowledgeBase = {
     '信息化': {
         points: [
             '定义：信息化是充分利用信息技术，开发利用信息资源，促进信息交流和知识共享，提高经济增长质量，推动经济社会发展转型的历史进程。',
@@ -880,8 +880,289 @@ const knowledgeBase = {
     }
 };
 
+export const textbookToc = [
+    {
+        chapter: 1, title: '信息化发展', page: 1,
+        sections: [
+            { id: '1.1', title: '信息与信息化', page: 1, subsections: [{ id: '1.1.1', title: '信息', page: 2 }, { id: '1.1.2', title: '信息系统', page: 2 }, { id: '1.1.3', title: '信息化', page: 4 }] },
+            { id: '1.2', title: '现代化基础设施', page: 7, subsections: [{ id: '1.2.1', title: '新型基础设施建设', page: 7 }, { id: '1.2.2', title: '工业互联网', page: 8 }, { id: '1.2.3', title: '车联网', page: 10 }] },
+            { id: '1.3', title: '现代化创新发展', page: 12, subsections: [{ id: '1.3.1', title: '农业农村现代化', page: 12 }, { id: '1.3.2', title: '两化融合与智能制造', page: 13 }, { id: '1.3.3', title: '消费互联网', page: 15 }] },
+            { id: '1.4', title: '数字中国', page: 16, subsections: [{ id: '1.4.1', title: '数字经济', page: 17 }, { id: '1.4.2', title: '数字政府', page: 20 }, { id: '1.4.3', title: '数字社会', page: 23 }, { id: '1.4.4', title: '数字生态', page: 27 }] },
+            { id: '1.5', title: '数字化转型与元宇宙', page: 28, subsections: [{ id: '1.5.1', title: '数字化转型', page: 28 }, { id: '1.5.2', title: '元宇宙', page: 34 }] },
+            { id: '1.6', title: '本章练习', page: 35, subsections: [] }
+        ]
+    },
+    {
+        chapter: 2, title: '信息技术发展', page: 37,
+        sections: [
+            { id: '2.1', title: '信息技术及其发展', page: 37, subsections: [{ id: '2.1.1', title: '计算机软硬件', page: 37 }, { id: '2.1.2', title: '计算机网络', page: 38 }, { id: '2.1.3', title: '存储和数据库', page: 41 }, { id: '2.1.4', title: '信息安全', page: 47 }, { id: '2.1.5', title: '信息技术的发展', page: 48 }] },
+            { id: '2.2', title: '新一代信息技术及应用', page: 49, subsections: [{ id: '2.2.1', title: '物联网', page: 49 }, { id: '2.2.2', title: '云计算', page: 51 }, { id: '2.2.3', title: '大数据', page: 55 }, { id: '2.2.4', title: '区块链', page: 57 }, { id: '2.2.5', title: '人工智能', page: 60 }, { id: '2.2.6', title: '虚拟现实', page: 63 }] },
+            { id: '2.3', title: '本章练习', page: 65, subsections: [] }
+        ]
+    },
+    {
+        chapter: 3, title: '信息系统治理', page: 67,
+        sections: [
+            { id: '3.1', title: 'IT治理', page: 67, subsections: [{ id: '3.1.1', title: 'IT治理基础', page: 67 }, { id: '3.1.2', title: 'IT治理体系', page: 69 }, { id: '3.1.3', title: 'IT治理任务', page: 73 }, { id: '3.1.4', title: 'IT治理方法与标准', page: 74 }] },
+            { id: '3.2', title: 'IT审计', page: 80, subsections: [{ id: '3.2.1', title: 'IT审计基础', page: 80 }, { id: '3.2.2', title: '审计方法与技术', page: 83 }, { id: '3.2.3', title: '审计流程', page: 88 }, { id: '3.2.4', title: '审计内容', page: 89 }] },
+            { id: '3.3', title: '本章练习', page: 91, subsections: [] }
+        ]
+    },
+    {
+        chapter: 4, title: '信息系统管理', page: 93,
+        sections: [
+            { id: '4.1', title: '管理方法', page: 93, subsections: [{ id: '4.1.1', title: '管理基础', page: 93 }, { id: '4.1.2', title: '规划和组织', page: 94 }, { id: '4.1.3', title: '设计和实施', page: 98 }, { id: '4.1.4', title: '运维和服务', page: 100 }, { id: '4.1.5', title: '优化和持续改进', page: 104 }] },
+            { id: '4.2', title: '管理要点', page: 107, subsections: [{ id: '4.2.1', title: '数据管理', page: 107 }, { id: '4.2.2', title: '运维管理', page: 119 }, { id: '4.2.3', title: '信息安全管理', page: 125 }] },
+            { id: '4.3', title: '本章练习', page: 127, subsections: [] }
+        ]
+    },
+    {
+        chapter: 5, title: '信息系统工程', page: 129,
+        sections: [
+            { id: '5.1', title: '软件工程', page: 129, subsections: [{ id: '5.1.1', title: '架构设计', page: 129 }, { id: '5.1.2', title: '需求分析', page: 131 }, { id: '5.1.3', title: '软件设计', page: 138 }, { id: '5.1.4', title: '软件实现', page: 140 }, { id: '5.1.5', title: '部署交付', page: 142 }, { id: '5.1.6', title: '过程管理', page: 144 }] },
+            { id: '5.2', title: '数据工程', page: 146, subsections: [{ id: '5.2.1', title: '数据建模', page: 147 }, { id: '5.2.2', title: '数据标准化', page: 149 }, { id: '5.2.3', title: '数据运维', page: 153 }, { id: '5.2.4', title: '数据开发利用', page: 157 }, { id: '5.2.5', title: '数据库安全', page: 161 }] },
+            { id: '5.3', title: '系统集成', page: 163, subsections: [{ id: '5.3.1', title: '集成基础', page: 163 }, { id: '5.3.2', title: '网络集成', page: 164 }, { id: '5.3.3', title: '数据集成', page: 165 }, { id: '5.3.4', title: '软件集成', page: 167 }, { id: '5.3.5', title: '应用集成', page: 169 }] },
+            { id: '5.4', title: '安全工程', page: 170, subsections: [{ id: '5.4.1', title: '工程概述', page: 170 }, { id: '5.4.2', title: '安全系统', page: 171 }, { id: '5.4.3', title: '工程基础', page: 174 }, { id: '5.4.4', title: '工程体系架构', page: 174 }] },
+            { id: '5.5', title: '本章练习', page: 181, subsections: [] }
+        ]
+    },
+    {
+        chapter: 6, title: '项目管理概论', page: 183,
+        sections: [
+            { id: '6.1', title: 'PMBOK的发展', page: 183, subsections: [] },
+            { id: '6.2', title: '项目基本要素', page: 184, subsections: [{ id: '6.2.1', title: '项目基础', page: 184 }, { id: '6.2.2', title: '项目管理的重要性', page: 186 }, { id: '6.2.3', title: '项目成功的标准', page: 187 }, { id: '6.2.4', title: '项目、项目集、项目组合和运营管理之间的关系', page: 187 }, { id: '6.2.5', title: '项目内外部运行环境', page: 191 }, { id: '6.2.6', title: '组织系统', page: 192 }, { id: '6.2.7', title: '项目管理和产品管理', page: 194 }] },
+            { id: '6.3', title: '项目经理的角色', page: 196, subsections: [{ id: '6.3.1', title: '项目经理的定义', page: 196 }, { id: '6.3.2', title: '项目经理的影响力范围', page: 196 }, { id: '6.3.3', title: '项目经理的能力', page: 198 }] },
+            { id: '6.4', title: '价值驱动的项目管理知识体系', page: 201, subsections: [{ id: '6.4.1', title: '项目管理原则', page: 202 }, { id: '6.4.2', title: '项目生命周期和项目阶段', page: 213 }, { id: '6.4.3', title: '项目管理过程组', page: 216 }, { id: '6.4.4', title: '项目管理知识领域', page: 219 }, { id: '6.4.5', title: '项目绩效域', page: 221 }, { id: '6.4.6', title: '价值交付系统', page: 221 }] },
+            { id: '6.5', title: '本章练习', page: 223, subsections: [] }
+        ]
+    },
+    {
+        chapter: 7, title: '项目立项管理', page: 225,
+        sections: [
+            { id: '7.1', title: '项目建议与立项申请', page: 225, subsections: [] },
+            { id: '7.2', title: '项目可行性研究', page: 225, subsections: [{ id: '7.2.1', title: '可行性研究的内容', page: 225 }, { id: '7.2.2', title: '初步可行性研究', page: 228 }, { id: '7.2.3', title: '详细可行性研究', page: 230 }] },
+            { id: '7.3', title: '项目评估与决策', page: 234, subsections: [] },
+            { id: '7.4', title: '本章练习', page: 236, subsections: [] }
+        ]
+    },
+    {
+        chapter: 8, title: '项目整合管理', page: 237,
+        sections: [
+            { id: '8.1', title: '管理基础', page: 237, subsections: [{ id: '8.1.1', title: '执行整合', page: 237 }, { id: '8.1.2', title: '整合的复杂性', page: 238 }, { id: '8.1.3', title: '管理新实践', page: 238 }, { id: '8.1.4', title: '项目管理计划和项目文件', page: 239 }] },
+            { id: '8.2', title: '项目整合管理过程', page: 239, subsections: [{ id: '8.2.1', title: '过程概述', page: 239 }, { id: '8.2.2', title: '裁剪考虑因素', page: 241 }, { id: '8.2.3', title: '敏捷与适应方法', page: 241 }] },
+            { id: '8.3', title: '制定项目章程', page: 242, subsections: [{ id: '8.3.1', title: '输入', page: 242 }, { id: '8.3.2', title: '工具与技术', page: 243 }, { id: '8.3.3', title: '输出', page: 244 }] },
+            { id: '8.4', title: '制订项目管理计划', page: 245, subsections: [{ id: '8.4.1', title: '输入', page: 246 }, { id: '8.4.2', title: '工具与技术', page: 246 }, { id: '8.4.3', title: '输出', page: 247 }] },
+            { id: '8.5', title: '指导与管理项目工作', page: 251, subsections: [{ id: '8.5.1', title: '输入', page: 252 }, { id: '8.5.2', title: '工具与技术', page: 253 }, { id: '8.5.3', title: '输出', page: 253 }] },
+            { id: '8.6', title: '管理项目知识', page: 255, subsections: [{ id: '8.6.1', title: '输入', page: 255 }, { id: '8.6.2', title: '工具与技术', page: 256 }, { id: '8.6.3', title: '输出', page: 257 }] },
+            { id: '8.7', title: '监控项目工作', page: 258, subsections: [{ id: '8.7.1', title: '输入', page: 259 }, { id: '8.7.2', title: '工具与技术', page: 260 }, { id: '8.7.3', title: '输出', page: 261 }] },
+            { id: '8.8', title: '实施整体变更控制', page: 262, subsections: [{ id: '8.8.1', title: '输入', page: 263 }, { id: '8.8.2', title: '工具与技术', page: 264 }, { id: '8.8.3', title: '输出', page: 265 }] },
+            { id: '8.9', title: '结束项目或阶段', page: 265, subsections: [{ id: '8.9.1', title: '输入', page: 266 }, { id: '8.9.2', title: '工具与技术', page: 268 }, { id: '8.9.3', title: '输出', page: 268 }] },
+            { id: '8.10', title: '本章练习', page: 269, subsections: [] }
+        ]
+    },
+    {
+        chapter: 9, title: '项目范围管理', page: 272,
+        sections: [
+            { id: '9.1', title: '管理基础', page: 272, subsections: [{ id: '9.1.1', title: '产品范围和项目范围', page: 272 }, { id: '9.1.2', title: '管理新实践', page: 272 }] },
+            { id: '9.2', title: '项目范围管理过程', page: 272, subsections: [{ id: '9.2.1', title: '过程概述', page: 272 }, { id: '9.2.2', title: '裁剪考虑因素', page: 274 }, { id: '9.2.3', title: '敏捷与适应方法', page: 274 }] },
+            { id: '9.3', title: '规划范围管理', page: 275, subsections: [{ id: '9.3.1', title: '输入', page: 275 }, { id: '9.3.2', title: '工具与技术', page: 276 }, { id: '9.3.3', title: '输出', page: 276 }] },
+            { id: '9.4', title: '收集需求', page: 276, subsections: [{ id: '9.4.1', title: '输入', page: 277 }, { id: '9.4.2', title: '工具与技术', page: 278 }, { id: '9.4.3', title: '输出', page: 280 }] },
+            { id: '9.5', title: '定义范围', page: 282, subsections: [{ id: '9.5.1', title: '输入', page: 282 }, { id: '9.5.2', title: '工具与技术', page: 283 }, { id: '9.5.3', title: '输出', page: 283 }] },
+            { id: '9.6', title: '创建WBS', page: 284, subsections: [{ id: '9.6.1', title: '输入', page: 285 }, { id: '9.6.2', title: '工具与技术', page: 285 }, { id: '9.6.3', title: '输出', page: 288 }] },
+            { id: '9.7', title: '确认范围', page: 289, subsections: [{ id: '9.7.1', title: '输入', page: 291 }, { id: '9.7.2', title: '工具与技术', page: 292 }, { id: '9.7.3', title: '输出', page: 292 }] },
+            { id: '9.8', title: '控制范围', page: 292, subsections: [{ id: '9.8.1', title: '输入', page: 293 }, { id: '9.8.2', title: '工具与技术', page: 294 }, { id: '9.8.3', title: '输出', page: 294 }] },
+            { id: '9.9', title: '本章练习', page: 295, subsections: [] }
+        ]
+    },
+    {
+        chapter: 10, title: '项目进度管理', page: 297,
+        sections: [
+            { id: '10.1', title: '管理基础', page: 297, subsections: [{ id: '10.1.1', title: '项目进度计划的定义和总要求', page: 297 }, { id: '10.1.2', title: '管理新实践', page: 297 }] },
+            { id: '10.2', title: '项目进度管理过程', page: 298, subsections: [{ id: '10.2.1', title: '过程概述', page: 298 }, { id: '10.2.2', title: '裁剪考虑因素', page: 299 }, { id: '10.2.3', title: '敏捷与适应方法', page: 299 }] },
+            { id: '10.3', title: '规划进度管理', page: 300, subsections: [{ id: '10.3.1', title: '输入', page: 300 }, { id: '10.3.2', title: '工具与技术', page: 301 }, { id: '10.3.3', title: '输出', page: 301 }] },
+            { id: '10.4', title: '定义活动', page: 302, subsections: [{ id: '10.4.1', title: '输入', page: 302 }, { id: '10.4.2', title: '工具与技术', page: 303 }, { id: '10.4.3', title: '输出', page: 303 }] },
+            { id: '10.5', title: '排列活动顺序', page: 304, subsections: [{ id: '10.5.1', title: '输入', page: 305 }, { id: '10.5.2', title: '工具与技术', page: 305 }, { id: '10.5.3', title: '输出', page: 309 }] },
+            { id: '10.6', title: '估算活动持续时间', page: 310, subsections: [{ id: '10.6.1', title: '输入', page: 311 }, { id: '10.6.2', title: '工具与技术', page: 312 }, { id: '10.6.3', title: '输出', page: 314 }] },
+            { id: '10.7', title: '制订进度计划', page: 314, subsections: [{ id: '10.7.1', title: '输入', page: 316 }, { id: '10.7.2', title: '工具与技术', page: 317 }, { id: '10.7.3', title: '输出', page: 323 }] },
+            { id: '10.8', title: '控制进度', page: 326, subsections: [{ id: '10.8.1', title: '输入', page: 327 }, { id: '10.8.2', title: '工具与技术', page: 328 }, { id: '10.8.3', title: '输出', page: 329 }] },
+            { id: '10.9', title: '本章练习', page: 330, subsections: [] }
+        ]
+    },
+    {
+        chapter: 11, title: '项目成本管理', page: 334,
+        sections: [
+            { id: '11.1', title: '管理基础', page: 334, subsections: [{ id: '11.1.1', title: '重要性和意义', page: 334 }, { id: '11.1.2', title: '相关术语和定义', page: 335 }, { id: '11.1.3', title: '管理新实践', page: 336 }] },
+            { id: '11.2', title: '项目成本管理过程', page: 337, subsections: [{ id: '11.2.1', title: '过程概述', page: 337 }, { id: '11.2.2', title: '裁剪考虑因素', page: 338 }, { id: '11.2.3', title: '敏捷与适应方法', page: 338 }] },
+            { id: '11.3', title: '规划成本管理', page: 338, subsections: [{ id: '11.3.1', title: '输入', page: 339 }, { id: '11.3.2', title: '工具与技术', page: 340 }, { id: '11.3.3', title: '输出', page: 340 }] },
+            { id: '11.4', title: '估算成本', page: 341, subsections: [{ id: '11.4.1', title: '输入', page: 342 }, { id: '11.4.2', title: '工具与技术', page: 343 }, { id: '11.4.3', title: '输出', page: 344 }] },
+            { id: '11.5', title: '制定预算', page: 345, subsections: [{ id: '11.5.1', title: '输入', page: 345 }, { id: '11.5.2', title: '工具与技术', page: 346 }, { id: '11.5.3', title: '输出', page: 347 }] },
+            { id: '11.6', title: '控制成本', page: 349, subsections: [{ id: '11.6.1', title: '输入', page: 349 }, { id: '11.6.2', title: '工具与技术', page: 350 }, { id: '11.6.3', title: '输出', page: 355 }] },
+            { id: '11.7', title: '本章练习', page: 356, subsections: [] }
+        ]
+    },
+    {
+        chapter: 12, title: '项目质量管理', page: 358,
+        sections: [
+            { id: '12.1', title: '管理基础', page: 358, subsections: [{ id: '12.1.1', title: '质量与项目质量', page: 358 }, { id: '12.1.2', title: '质量管理', page: 359 }, { id: '12.1.3', title: '质量管理标准体系', page: 360 }, { id: '12.1.4', title: '管理新实践', page: 360 }] },
+            { id: '12.2', title: '项目质量管理过程', page: 361, subsections: [{ id: '12.2.1', title: '过程概述', page: 361 }, { id: '12.2.2', title: '裁剪考虑因素', page: 362 }, { id: '12.2.3', title: '敏捷与适应方法', page: 363 }] },
+            { id: '12.3', title: '规划质量管理', page: 363, subsections: [{ id: '12.3.1', title: '输入', page: 364 }, { id: '12.3.2', title: '工具与技术', page: 365 }, { id: '12.3.3', title: '输出', page: 367 }] },
+            { id: '12.4', title: '管理质量', page: 368, subsections: [{ id: '12.4.1', title: '输入', page: 369 }, { id: '12.4.2', title: '工具与技术', page: 370 }, { id: '12.4.3', title: '输出', page: 372 }] },
+            { id: '12.5', title: '控制质量', page: 373, subsections: [{ id: '12.5.1', title: '输入', page: 374 }, { id: '12.5.2', title: '工具与技术', page: 375 }, { id: '12.5.3', title: '输出', page: 376 }] },
+            { id: '12.6', title: '本章练习', page: 377, subsections: [] }
+        ]
+    },
+    {
+        chapter: 13, title: '项目资源管理', page: 380,
+        sections: [
+            { id: '13.1', title: '管理基础', page: 380, subsections: [{ id: '13.1.1', title: '相关术语和定义', page: 380 }, { id: '13.1.2', title: '管理新实践', page: 386 }] },
+            { id: '13.2', title: '项目资源管理过程', page: 387, subsections: [{ id: '13.2.1', title: '过程概述', page: 387 }, { id: '13.2.2', title: '裁剪考虑因素', page: 388 }, { id: '13.2.3', title: '敏捷与适应方法', page: 388 }] },
+            { id: '13.3', title: '规划资源管理', page: 389, subsections: [{ id: '13.3.1', title: '输入', page: 389 }, { id: '13.3.2', title: '工具与技术', page: 390 }, { id: '13.3.3', title: '输出', page: 392 }] },
+            { id: '13.4', title: '估算活动资源', page: 393, subsections: [{ id: '13.4.1', title: '输入', page: 393 }, { id: '13.4.2', title: '工具与技术', page: 394 }, { id: '13.4.3', title: '输出', page: 395 }] },
+            { id: '13.5', title: '获取资源', page: 396, subsections: [{ id: '13.5.1', title: '输入', page: 397 }, { id: '13.5.2', title: '工具与技术', page: 398 }, { id: '13.5.3', title: '输出', page: 399 }] },
+            { id: '13.6', title: '建设团队', page: 400, subsections: [{ id: '13.6.1', title: '输入', page: 401 }, { id: '13.6.2', title: '工具与技术', page: 402 }, { id: '13.6.3', title: '输出', page: 403 }] },
+            { id: '13.7', title: '管理团队', page: 404, subsections: [{ id: '13.7.1', title: '输入', page: 405 }, { id: '13.7.2', title: '工具与技术', page: 406 }, { id: '13.7.3', title: '输出', page: 407 }] },
+            { id: '13.8', title: '控制资源', page: 408, subsections: [{ id: '13.8.1', title: '输入', page: 409 }, { id: '13.8.2', title: '工具与技术', page: 410 }, { id: '13.8.3', title: '输出', page: 410 }] },
+            { id: '13.9', title: '本章练习', page: 411, subsections: [] }
+        ]
+    },
+    {
+        chapter: 14, title: '项目沟通管理', page: 414,
+        sections: [
+            { id: '14.1', title: '管理基础', page: 414, subsections: [{ id: '14.1.1', title: '沟通', page: 414 }, { id: '14.1.2', title: '沟通模型', page: 414 }, { id: '14.1.3', title: '沟通分类', page: 415 }, { id: '14.1.4', title: '沟通技巧', page: 415 }, { id: '14.1.5', title: '管理新实践', page: 416 }] },
+            { id: '14.2', title: '项目沟通管理过程', page: 417, subsections: [{ id: '14.2.1', title: '过程概述', page: 417 }, { id: '14.2.2', title: '裁剪考虑因素', page: 418 }, { id: '14.2.3', title: '敏捷与适应方法', page: 418 }] },
+            { id: '14.3', title: '规划沟通管理', page: 418, subsections: [{ id: '14.3.1', title: '输入', page: 419 }, { id: '14.3.2', title: '工具与技术', page: 420 }, { id: '14.3.3', title: '输出', page: 422 }] },
+            { id: '14.4', title: '管理沟通', page: 423, subsections: [{ id: '14.4.1', title: '输入', page: 424 }, { id: '14.4.2', title: '工具与技术', page: 425 }, { id: '14.4.3', title: '输出', page: 426 }] },
+            { id: '14.5', title: '监督沟通', page: 427, subsections: [{ id: '14.5.1', title: '输入', page: 428 }, { id: '14.5.2', title: '工具与技术', page: 428 }, { id: '14.5.3', title: '输出', page: 429 }] },
+            { id: '14.6', title: '本章练习', page: 430, subsections: [] }
+        ]
+    },
+    {
+        chapter: 15, title: '项目风险管理', page: 431,
+        sections: [
+            { id: '15.1', title: '管理基础', page: 431, subsections: [{ id: '15.1.1', title: '项目风险概述', page: 431 }, { id: '15.1.2', title: '风险的属性', page: 431 }, { id: '15.1.3', title: '风险的分类', page: 433 }, { id: '15.1.4', title: '风险成本及其负担', page: 434 }, { id: '15.1.5', title: '管理新实践', page: 435 }] },
+            { id: '15.2', title: '项目风险管理过程', page: 436, subsections: [{ id: '15.2.1', title: '过程概述', page: 436 }, { id: '15.2.2', title: '裁剪考虑因素', page: 438 }, { id: '15.2.3', title: '敏捷与适应方法', page: 438 }] },
+            { id: '15.3', title: '规划风险管理', page: 438, subsections: [{ id: '15.3.1', title: '输入', page: 439 }, { id: '15.3.2', title: '工具与技术', page: 440 }, { id: '15.3.3', title: '输出', page: 440 }] },
+            { id: '15.4', title: '识别风险', page: 443, subsections: [{ id: '15.4.1', title: '输入', page: 444 }, { id: '15.4.2', title: '工具与技术', page: 445 }, { id: '15.4.3', title: '输出', page: 447 }] },
+            { id: '15.5', title: '实施定性风险分析', page: 448, subsections: [{ id: '15.5.1', title: '输入', page: 448 }, { id: '15.5.2', title: '工具与技术', page: 449 }, { id: '15.5.3', title: '输出', page: 451 }] },
+            { id: '15.6', title: '实施定量风险分析', page: 452, subsections: [{ id: '15.6.1', title: '输入', page: 453 }, { id: '15.6.2', title: '工具与技术', page: 454 }, { id: '15.6.3', title: '输出', page: 457 }] },
+            { id: '15.7', title: '规划风险应对', page: 457, subsections: [{ id: '15.7.1', title: '输入', page: 458 }, { id: '15.7.2', title: '工具与技术', page: 459 }, { id: '15.7.3', title: '输出', page: 462 }] },
+            { id: '15.8', title: '实施风险应对', page: 463, subsections: [{ id: '15.8.1', title: '输入', page: 464 }, { id: '15.8.2', title: '工具与技术', page: 464 }, { id: '15.8.3', title: '输出', page: 465 }] },
+            { id: '15.9', title: '监督风险', page: 465, subsections: [{ id: '15.9.1', title: '输入', page: 466 }, { id: '15.9.2', title: '工具与技术', page: 467 }, { id: '15.9.3', title: '输出', page: 467 }] },
+            { id: '15.10', title: '风险管理示例', page: 468, subsections: [] },
+            { id: '15.11', title: '本章练习', page: 470, subsections: [] }
+        ]
+    },
+    {
+        chapter: 16, title: '项目采购管理', page: 472,
+        sections: [
+            { id: '16.1', title: '管理基础', page: 472, subsections: [{ id: '16.1.1', title: '协议/采购合同', page: 472 }, { id: '16.1.2', title: '管理新实践', page: 473 }] },
+            { id: '16.2', title: '项目采购管理过程', page: 474, subsections: [{ id: '16.2.1', title: '过程概述', page: 474 }, { id: '16.2.2', title: '裁剪考虑因素', page: 475 }, { id: '16.2.3', title: '敏捷与适应方法', page: 475 }] },
+            { id: '16.3', title: '规划采购管理', page: 475, subsections: [{ id: '16.3.1', title: '输入', page: 476 }, { id: '16.3.2', title: '工具与技术', page: 478 }, { id: '16.3.3', title: '输出', page: 480 }] },
+            { id: '16.4', title: '实施采购', page: 483, subsections: [{ id: '16.4.1', title: '输入', page: 484 }, { id: '16.4.2', title: '工具与技术', page: 485 }, { id: '16.4.3', title: '输出', page: 486 }] },
+            { id: '16.5', title: '控制采购', page: 487, subsections: [{ id: '16.5.1', title: '输入', page: 488 }, { id: '16.5.2', title: '工具与技术', page: 490 }, { id: '16.5.3', title: '输出', page: 491 }] },
+            { id: '16.6', title: '项目合同管理', page: 492, subsections: [{ id: '16.6.1', title: '合同的类型', page: 493 }, { id: '16.6.2', title: '合同的内容', page: 496 }, { id: '16.6.3', title: '合同管理过程', page: 497 }] },
+            { id: '16.7', title: '本章练习', page: 501, subsections: [] }
+        ]
+    },
+    {
+        chapter: 17, title: '项目干系人管理', page: 503,
+        sections: [
+            { id: '17.1', title: '管理基础', page: 503, subsections: [{ id: '17.1.1', title: '管理的重要性', page: 503 }, { id: '17.1.2', title: '管理新实践', page: 503 }] },
+            { id: '17.2', title: '项目干系人管理过程', page: 504, subsections: [{ id: '17.2.1', title: '过程概述', page: 504 }, { id: '17.2.2', title: '裁剪考虑因素', page: 505 }, { id: '17.2.3', title: '敏捷与适应方法', page: 505 }] },
+            { id: '17.3', title: '识别干系人', page: 505, subsections: [{ id: '17.3.1', title: '输入', page: 506 }, { id: '17.3.2', title: '工具与技术', page: 507 }, { id: '17.3.3', title: '输出', page: 508 }] },
+            { id: '17.4', title: '规划干系人参与', page: 509, subsections: [{ id: '17.4.1', title: '输入', page: 510 }, { id: '17.4.2', title: '工具与技术', page: 511 }, { id: '17.4.3', title: '输出', page: 512 }] },
+            { id: '17.5', title: '管理干系人参与', page: 512, subsections: [{ id: '17.5.1', title: '输入', page: 513 }, { id: '17.5.2', title: '工具与技术', page: 514 }, { id: '17.5.3', title: '输出', page: 515 }] },
+            { id: '17.6', title: '监督干系人参与', page: 515, subsections: [{ id: '17.6.1', title: '输入', page: 516 }, { id: '17.6.2', title: '工具与技术', page: 516 }, { id: '17.6.3', title: '输出', page: 517 }] },
+            { id: '17.7', title: '本章练习', page: 518, subsections: [] }
+        ]
+    },
+    {
+        chapter: 18, title: '项目绩效域', page: 520,
+        sections: [
+            { id: '18.1', title: '干系人绩效域', page: 520, subsections: [{ id: '18.1.1', title: '绩效要点', page: 520 }, { id: '18.1.2', title: '与其他绩效域的相互作用', page: 521 }, { id: '18.1.3', title: '执行效果检查', page: 522 }] },
+            { id: '18.2', title: '团队绩效域', page: 522, subsections: [{ id: '18.2.1', title: '绩效要点', page: 522 }, { id: '18.2.2', title: '与其他绩效域的相互作用', page: 526 }, { id: '18.2.3', title: '执行效果检查', page: 526 }] },
+            { id: '18.3', title: '开发方法和生命周期绩效域', page: 526, subsections: [{ id: '18.3.1', title: '绩效要点', page: 526 }, { id: '18.3.2', title: '与其他绩效域的相互作用', page: 531 }, { id: '18.3.3', title: '执行效果检查', page: 532 }] },
+            { id: '18.4', title: '规划绩效域', page: 532, subsections: [{ id: '18.4.1', title: '绩效要点', page: 532 }, { id: '18.4.2', title: '与其他绩效域的相互作用', page: 535 }, { id: '18.4.3', title: '执行效果检查', page: 536 }] },
+            { id: '18.5', title: '项目工作绩效域', page: 536, subsections: [{ id: '18.5.1', title: '绩效要点', page: 537 }, { id: '18.5.2', title: '与其他绩效域的相互作用', page: 539 }, { id: '18.5.3', title: '执行效果检查', page: 539 }] },
+            { id: '18.6', title: '交付绩效域', page: 539, subsections: [{ id: '18.6.1', title: '绩效要点', page: 540 }, { id: '18.6.2', title: '与其他绩效域的相互作用', page: 541 }, { id: '18.6.3', title: '执行效果检查', page: 541 }] },
+            { id: '18.7', title: '度量绩效域', page: 542, subsections: [{ id: '18.7.1', title: '绩效要点', page: 542 }, { id: '18.7.2', title: '与其他绩效域的相互作用', page: 549 }, { id: '18.7.3', title: '执行效果检查', page: 550 }] },
+            { id: '18.8', title: '不确定性绩效域', page: 550, subsections: [{ id: '18.8.1', title: '绩效要点', page: 550 }, { id: '18.8.2', title: '与其他绩效域的相互作用', page: 552 }, { id: '18.8.3', title: '执行效果检查', page: 552 }] },
+            { id: '18.9', title: '本章练习', page: 553, subsections: [] }
+        ]
+    },
+    {
+        chapter: 19, title: '配置与变更管理', page: 555,
+        sections: [
+            { id: '19.1', title: '配置管理', page: 555, subsections: [{ id: '19.1.1', title: '管理基础', page: 555 }, { id: '19.1.2', title: '角色与职责', page: 558 }, { id: '19.1.3', title: '目标与方针', page: 559 }, { id: '19.1.4', title: '管理活动', page: 560 }] },
+            { id: '19.2', title: '变更管理', page: 564, subsections: [{ id: '19.2.1', title: '管理基础', page: 564 }, { id: '19.2.2', title: '管理原则', page: 565 }, { id: '19.2.3', title: '角色与职责', page: 565 }, { id: '19.2.4', title: '工作程序', page: 566 }, { id: '19.2.5', title: '变更控制', page: 567 }, { id: '19.2.6', title: '版本发布和回退计划', page: 568 }] },
+            { id: '19.3', title: '项目文档管理', page: 569, subsections: [{ id: '19.3.1', title: '管理基础', page: 569 }, { id: '19.3.2', title: '规则和方法', page: 569 }] }
+        ]
+    },
+    {
+        chapter: 20, title: '高级项目管理', page: 572,
+        sections: [
+            { id: '20.1', title: '项目集管理', page: 572, subsections: [{ id: '20.1.1', title: '项目集管理标准', page: 572 }, { id: '20.1.2', title: '项目集管理角色和职责', page: 572 }, { id: '20.1.3', title: '项目集管理绩效域', page: 574 }] },
+            { id: '20.2', title: '项目组合管理', page: 577, subsections: [{ id: '20.2.1', title: '项目组合管理标准', page: 577 }, { id: '20.2.2', title: '项目组合管理角色和职责', page: 577 }, { id: '20.2.3', title: '项目组合管理绩效域', page: 578 }] },
+            { id: '20.3', title: '组织级项目管理', page: 583, subsections: [{ id: '20.3.1', title: '组织级项目管理标准', page: 584 }, { id: '20.3.2', title: '业务价值与业务评估', page: 584 }, { id: '20.3.3', title: 'OPM框架要素', page: 584 }, { id: '20.3.4', title: 'OPM成熟度模型', page: 586 }] },
+            { id: '20.4', title: '量化项目管理', page: 587, subsections: [{ id: '20.4.1', title: '量化管理理论及应用', page: 587 }, { id: '20.4.2', title: '组织级量化管理', page: 590 }, { id: '20.4.3', title: '项目级量化管理', page: 597 }] },
+            { id: '20.5', title: '项目管理实践模型', page: 598, subsections: [{ id: '20.5.1', title: 'CMMI模型', page: 598 }, { id: '20.5.2', title: 'PRINCE2模型', page: 602 }] },
+            { id: '20.6', title: '本章练习', page: 605, subsections: [] }
+        ]
+    },
+    {
+        chapter: 21, title: '项目管理科学基础', page: 607,
+        sections: [
+            { id: '21.1', title: '工程经济学', page: 607, subsections: [{ id: '21.1.1', title: '资金的时间价值与等值计算', page: 607 }, { id: '21.1.2', title: '项目经济评价', page: 610 }] },
+            { id: '21.2', title: '运筹学', page: 617, subsections: [{ id: '21.2.1', title: '线性规划', page: 617 }, { id: '21.2.2', title: '运输问题', page: 619 }, { id: '21.2.3', title: '指派问题', page: 621 }, { id: '21.2.4', title: '动态规划', page: 624 }, { id: '21.2.5', title: '图与网络', page: 628 }, { id: '21.2.6', title: '博弈论', page: 631 }, { id: '21.2.7', title: '决策分析', page: 634 }] },
+            { id: '21.3', title: '本章练习', page: 639, subsections: [] }
+        ]
+    },
+    {
+        chapter: 22, title: '组织通用治理', page: 641,
+        sections: [
+            { id: '22.1', title: '组织战略', page: 641, subsections: [{ id: '22.1.1', title: '组织战略要点', page: 641 }, { id: '22.1.2', title: '组织定位', page: 642 }, { id: '22.1.3', title: '组织环境分析', page: 643 }, { id: '22.1.4', title: '组织能力确认', page: 644 }, { id: '22.1.5', title: '创新和改进', page: 645 }] },
+            { id: '22.2', title: '绩效考核', page: 645, subsections: [{ id: '22.2.1', title: '绩效计划', page: 645 }, { id: '22.2.2', title: '绩效实施', page: 648 }, { id: '22.2.3', title: '绩效治理', page: 649 }, { id: '22.2.4', title: '绩效评估', page: 650 }, { id: '22.2.5', title: '绩效评价结果反馈', page: 653 }, { id: '22.2.6', title: '绩效评价结果应用', page: 653 }] },
+            { id: '22.3', title: '转型升级', page: 654, subsections: [{ id: '22.3.1', title: '战略转型升级', page: 654 }, { id: '22.3.2', title: '数字化转型实施', page: 656 }] },
+            { id: '22.4', title: '本章练习', page: 661, subsections: [] }
+        ]
+    },
+    {
+        chapter: 23, title: '组织通用管理', page: 663,
+        sections: [
+            { id: '23.1', title: '人力资源管理', page: 663, subsections: [{ id: '23.1.1', title: '人力资源管理基础', page: 663 }, { id: '23.1.2', title: '工作分析与岗位设计', page: 664 }, { id: '23.1.3', title: '人力资源战略与计划', page: 667 }, { id: '23.1.4', title: '人员招聘与录用', page: 670 }, { id: '23.1.5', title: '人员培训', page: 673 }, { id: '23.1.6', title: '组织薪酬管理', page: 676 }, { id: '23.1.7', title: '人员职业规划与管理', page: 680 }] },
+            { id: '23.2', title: '流程管理', page: 680, subsections: [{ id: '23.2.1', title: '流程基础', page: 681 }, { id: '23.2.2', title: '流程规划', page: 683 }, { id: '23.2.3', title: '流程执行', page: 687 }, { id: '23.2.4', title: '流程评价', page: 688 }, { id: '23.2.5', title: '流程持续改进', page: 692 }] },
+            { id: '23.3', title: '知识管理', page: 693, subsections: [{ id: '23.3.1', title: '知识管理基础', page: 693 }, { id: '23.3.2', title: '知识价值链', page: 694 }, { id: '23.3.3', title: '显性知识与隐性知识', page: 695 }, { id: '23.3.4', title: '知识管理过程', page: 697 }, { id: '23.3.5', title: '知识协同与创新', page: 702 }, { id: '23.3.6', title: '知识传播与服务', page: 703 }] },
+            { id: '23.4', title: '市场营销', page: 705, subsections: [{ id: '23.4.1', title: '营销基础', page: 705 }, { id: '23.4.2', title: '营销环境', page: 708 }, { id: '23.4.3', title: '营销分析', page: 709 }, { id: '23.4.4', title: '营销管控', page: 713 }] },
+            { id: '23.5', title: '本章练习', page: 715, subsections: [] }
+        ]
+    },
+    {
+        chapter: 24, title: '法律法规与标准规范', page: 717,
+        sections: [
+            { id: '24.1', title: '法律法规', page: 717, subsections: [{ id: '24.1.1', title: '民法典（合同编）', page: 717 }, { id: '24.1.2', title: '招标投标法', page: 717 }, { id: '24.1.3', title: '政府采购法', page: 717 }, { id: '24.1.4', title: '专利法', page: 718 }, { id: '24.1.5', title: '著作权法', page: 718 }, { id: '24.1.6', title: '商标法', page: 718 }, { id: '24.1.7', title: '网络安全法', page: 718 }, { id: '24.1.8', title: '数据安全法', page: 719 }] },
+            { id: '24.2', title: '标准规范', page: 719, subsections: [{ id: '24.2.1', title: '系统与软件工程标准', page: 719 }, { id: '24.2.2', title: '新一代信息技术标准', page: 723 }, { id: '24.2.3', title: '信息技术服务标准', page: 728 }] },
+            { id: '24.3', title: '本章练习', page: 729, subsections: [] },
+            { id: 'ref', title: '参考文献', page: 731, subsections: [] }
+        ]
+    }
+];
+
 // 数据层：满血全量10大管理、49个过程数据库
-const pmbokData = [
+export const pmbokData = [
+    { 
+        id: "textbook-toc", chapter: 0, name: "教材目录（第4版）", icon: "fa-solid fa-book", type: "knowledge",
+        desc: "以《信息系统项目管理师教程（第4版）》目录作为全站知识库与章节细化的唯一权威口径。", 
+        mnemonic: "目录=覆盖清单", 
+        knowledgePoints: [] 
+    },
+    { 
+        id: "diagram-lab", chapter: 0, name: "图形组件示例", icon: "fa-solid fa-shapes", type: "knowledge",
+        desc: "用于集中预览与调试：流程图、拓扑图、功能分析图等图形组件的统一 UI 风格。", 
+        mnemonic: "Flow / Topo / ICOM", 
+        knowledgePoints: [
+            { id: "0.1", title: "说明", layout: "list", terms: [], content: ["用于调 UI：卡片层级、留白、边框、响应式与对比度。"], exam: [] }
+        ] 
+    },
     { 
         id: "info-dev", chapter: 1, name: "信息化发展", icon: "fa-solid fa-microchip", type: "knowledge",
         desc: "本章介绍信息化和信息系统、国家信息化战略及“十四五”规划等。", 
@@ -943,12 +1224,13 @@ const pmbokData = [
         mnemonic: "项目=临时独特；启规执监收；职矩项复", 
         knowledgePoints: [
             { 
-                id: "1", title: "一、项目 vs 运营（先把概念分清）",
+                id: "1", title: "一、项目 vs 运营（四象限一眼区分）",
                 layout: "list",
                 terms: ["项目","运营","项目管理"],
                 content: [
                     "<strong>项目</strong>：为创造独特的产品/服务/成果而开展的临时性工作",
                     "<strong>运营</strong>：持续性工作，用于维持业务运行并产生重复性产出",
+                    "<strong>四象限抓手</strong>：临时/持续 × 独特/重复（项目=临时+独特；运营=持续+重复）",
                     "<strong>做题技巧</strong>：看到“持续、重复、稳定产出”倾向运营；看到“临时、独特、一次性成果”倾向项目"
                 ],
                 exam: ["常考：项目的两大特征是临时性、独特性。", "常考：项目与运营的区分。"]
@@ -960,7 +1242,7 @@ const pmbokData = [
                 content: [
                     "<strong>传统三重制约</strong>：范围/进度/成本（一个变，其他通常也要联动）",
                     "<strong>现实成功标准</strong>：价值与收益、质量、风险可控、干系人满意度等也要综合判断",
-                    "<strong>题目问法</strong>：问“为什么延误/超支/返工”，大概率是约束平衡和变更控制的问题"
+                    "<strong>题目问法</strong>：问“为什么延误/超支/返工”，大概率是约束平衡与变更带来的连锁影响"
                 ],
                 exam: ["常考：范围、进度、成本之间的联动关系。"]
             },
@@ -971,32 +1253,33 @@ const pmbokData = [
                 content: [
                     "<strong>组织结构类型</strong>：职能型 / 矩阵型（弱/平衡/强）/ 项目型 / 复合型",
                     "<strong>权力梯度</strong>：职能型 < 弱矩阵 < 平衡矩阵 < 强矩阵 < 项目型",
-                    "<strong>做题技巧</strong>：题干给出“谁能拍板/资源归谁/汇报给谁”，就能反推结构类型"
+                    "<strong>做题技巧</strong>：题干给出“谁能拍板/资源归谁/汇报给谁”，就能反推结构类型；矩阵型重点看“双线汇报/资源冲突”"
                 ],
                 exam: ["常考：不同结构下 PM 权力大小排序。", "常考：矩阵型的三类（弱/平衡/强）的特点。"]
             },
             { 
-                id: "4", title: "四、角色与职责（题干常把责任人写错）",
-                layout: "list",
-                terms: ["项目发起人","项目经理","项目团队","干系人","PMO","项目章程"],
-                content: [
-                    "<strong>项目发起人/赞助人</strong>：为项目提供资源支持，批准关键决策，发布项目章程",
-                    "<strong>项目经理</strong>：对目标负责，做整合与协调，平衡约束条件与干系人期望",
-                    "<strong>项目团队</strong>：执行项目工作，产出可交付成果",
-                    "<strong>PMO</strong>：组织层面支持/控制/指令项目管理活动"
-                ],
-                exam: ["常考：项目章程由发起人/赞助人发布，而不是项目经理。"]
-            },
-            { 
-                id: "5", title: "五、环境与资产（EEF/OPA 做题经常考）",
+                id: "4", title: "四、环境与资产（EEF/OPA 做题经常考）",
                 layout: "list",
                 terms: ["事业环境因素","组织过程资产"],
                 content: [
-                    "<strong>EEF</strong>：团队不可控但会影响项目的环境因素（文化、法律、市场等）",
-                    "<strong>OPA</strong>：组织沉淀可复用资产（流程、模板、经验教训、历史数据等）",
-                    "<strong>做题技巧</strong>：EEF 偏“环境约束”；OPA 偏“组织复用与沉淀”"
+                    "<strong>EEF</strong>：团队不可控但会影响项目的环境因素（文化、法律、市场、行业规范、供应商环境等）",
+                    "<strong>OPA</strong>：组织沉淀可复用资产（流程、模板、规范、经验教训、历史数据、基准等）",
+                    "<strong>做题技巧</strong>：EEF 偏“环境约束/外部条件”；OPA 偏“组织复用/方法与沉淀”"
                 ],
                 exam: ["常考：EEF 与 OPA 的区别。"]
+            },
+            { 
+                id: "5", title: "五、角色与职责（案例找茬：责任人写错）",
+                layout: "list",
+                terms: ["项目发起人","项目经理","项目团队","干系人","PMO","项目章程"],
+                content: [
+                    "<strong>项目发起人/赞助人</strong>：提供资源支持，批准关键决策，<strong>发布项目章程</strong>",
+                    "<strong>项目经理</strong>：对目标负责（范围/进度/成本/风险），做整合与协调，管理干系人期望",
+                    "<strong>项目团队</strong>：执行项目工作，产出可交付成果（矩阵型常见双线汇报）",
+                    "<strong>干系人</strong>：能影响/被影响/自认为会被影响的个人或组织（关键在持续沟通）",
+                    "<strong>PMO</strong>：支持型/控制型/指令型（指令型权力最大）"
+                ],
+                exam: ["常考：项目章程由发起人/赞助人发布，而不是项目经理。", "常考：指令型 PMO 权力最大。"]
             },
             { 
                 id: "6", title: "六、生命周期与过程组（用一条主线记牢）",
@@ -1019,7 +1302,7 @@ const pmbokData = [
                     "<strong>易错3</strong>：职能型里 PM 权力很弱（很多事拍不了板）",
                     "<strong>易错4</strong>：PMO 类型与权力大小（指令型 > 控制型 > 支持型）"
                 ],
-                exam: ["常考：指令型 PMO 权力最大。"]
+                exam: ["常考：指令型 PMO 权力最大。", "常考：过程组与阶段的区别（不可混为一谈）。"]
             }
         ] 
     },
