@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>软考高项（第四版）- ITTO 考点地图</title>
+    <!-- 引入 Tailwind CSS & DaisyUI -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.2/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 FontAwesome 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 引入自定义样式 -->
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        tailwind.config = {
+            darkMode: ['class', '[data-theme="dark"]'],
+            theme: {
+                extend: {
+                    colors: {
+                        examRed: '#ef4444',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-base-200 text-base-content flex h-screen overflow-hidden antialiased">
+
+    <!-- 知识延伸弹窗容器 -->
+    <dialog id="knowledge-modal" class="modal">
+        <div class="modal-box w-11/12 lg:w-[80vw] max-w-none p-0 overflow-hidden border border-base-300 shadow-2xl bg-base-100">
+            <div class="bg-primary text-primary-content px-6 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg flex items-center"><i class="fa-solid fa-lightbulb mr-2 text-warning"></i>知识延伸</h3>
+                <form method="dialog">
+                    <button class="btn btn-sm btn-circle btn-ghost text-primary-content hover:bg-primary-focus">✕</button>
+                </form>
+            </div>
+            <div class="p-6 space-y-6 max-h-[75vh] overflow-y-auto custom-scrollbar" id="knowledge-content">
+                <!-- 动态内容 -->
+            </div>
+            <div class="bg-base-200 px-6 py-3 text-xs text-base-content/50 border-t border-base-300 flex justify-between items-center italic">
+                <span>提示：点击弹窗外可关闭</span>
+                <span class="badge badge-sm badge-outline badge-primary">考点详解</span>
+            </div>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
+
+    <!-- 抽屉布局 -->
+    <div class="drawer lg:drawer-open w-full h-screen">
+        <input id="my-drawer" type="checkbox" class="drawer-toggle" />
+        
+        <div class="drawer-content h-screen overflow-y-auto custom-scrollbar bg-base-200 flex flex-col">
+            <!-- 顶部信息栏 -->
+            <header class="navbar bg-base-100 border-b border-base-300 px-4 lg:px-8 h-20 sticky top-0 z-20 shadow-sm backdrop-blur-md bg-opacity-80 flex-none">
+                <div class="flex-none lg:hidden">
+                    <label for="my-drawer" class="btn btn-square btn-ghost">
+                        <i class="fa-solid fa-bars"></i>
+                    </label>
+                </div>
+                
+                <div class="flex-1 px-2 mx-2">
+                    <div class="flex items-center space-x-4">
+                        <div class="avatar placeholder hidden sm:inline-flex">
+                            <div class="bg-primary text-primary-content rounded-xl w-12 shadow-lg shadow-primary/20">
+                                <i class="fa-solid fa-layer-group text-xl"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h2 id="area-title" class="text-xl font-black tracking-tight leading-none mb-1">--</h2>
+                            <div class="flex items-center space-x-2">
+                                <span id="area-chapter" class="badge badge-primary badge-sm font-bold tracking-widest uppercase">CHAPTER --</span>
+                                <span class="text-[10px] opacity-40 font-bold uppercase tracking-tighter">ITTO MAP v4.1</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-none gap-2 lg:gap-6">
+                    <div class="flex items-center recitation-hide">
+                        <button id="knowledgeIndexBtn" class="btn btn-ghost btn-circle" aria-label="知识点索引">
+                            <i class="fa-solid fa-book text-xl text-primary"></i>
+                        </button>
+                    </div>
+
+                    <!-- 白天黑夜切换 -->
+                    <div class="flex items-center">
+                        <label class="swap swap-rotate btn btn-ghost btn-circle">
+                            <input type="checkbox" id="themeToggle" />
+                            <i class="fa-solid fa-sun swap-on fill-current text-xl text-warning"></i>
+                            <i class="fa-solid fa-moon swap-off fill-current text-xl text-primary"></i>
+                        </label>
+                    </div>
+
+                    <div class="h-8 w-px bg-base-300 hidden sm:block"></div>
+
+                    <!-- 进度条 -->
+                    <div class="hidden md:flex flex-col items-end mr-2">
+                        <span class="text-[10px] font-bold opacity-40 uppercase tracking-widest mb-1">掌握度</span>
+                        <div class="flex items-center gap-2">
+                            <progress id="mastery-progress" class="progress progress-primary w-24 h-1.5" value="0" max="100"></progress>
+                            <span id="mastery-text" class="text-[10px] font-black">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 内容区 -->
+            <main class="p-4 lg:p-8 flex-none">
+                <!-- 知识导引 -->
+                <div class="card bg-base-100 shadow-xl border border-base-300 mb-10 overflow-hidden recitation-hide">
+                    <div class="card-body p-0">
+                        <div class="grid grid-cols-1 md:grid-cols-2">
+                            <div class="p-6 border-b md:border-b-0 md:border-r border-base-300 relative">
+                                <div class="absolute -top-3 -left-3 opacity-10 pointer-events-none">
+                                    <i class="fa-solid fa-quote-left text-6xl text-primary"></i>
+                                </div>
+                                <h3 class="text-xs font-black text-primary uppercase tracking-widest mb-3 flex items-center">
+                                    <i class="fa-solid fa-rocket mr-2"></i>管理核心奥义
+                                </h3>
+                                <p id="area-desc" class="text-base-content/70 leading-relaxed text-sm italic">--</p>
+                            </div>
+                            <div class="p-6 bg-base-200/30">
+                                <h3 class="text-xs font-black text-secondary uppercase tracking-widest mb-3 flex items-center">
+                                    <i class="fa-solid fa-bolt mr-2 text-warning"></i>快速记忆口诀
+                                </h3>
+                                <p id="area-mnemonic" class="text-base-content font-black text-xl lg:text-2xl tracking-tighter drop-shadow-sm">--</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 过程卡片网格 -->
+                <div id="processes-container" class="grid grid-cols-1 gap-10">
+                    <!-- 动态渲染过程卡片 -->
+                </div>
+            </main>
+        </div>
+
+        <!-- 左侧导航 -->
+        <div class="drawer-side z-20">
+            <label for="my-drawer" class="drawer-overlay"></label>
+            <div class="w-72 min-h-full bg-base-100 border-r border-base-300 flex flex-col p-0">
+                <div class="p-8 border-b border-base-300 flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-black tracking-tighter text-primary flex items-center leading-none">
+                            <i class="fa-solid fa-map-location-dot mr-2"></i>MAP <span class="text-base-content/20 ml-1">4.0</span>
+                        </h1>
+                        <p class="text-[9px] font-black uppercase tracking-[0.2em] text-base-content/30 mt-1">ITTO EXPLORER</p>
+                    </div>
+                </div>
+                
+                <ul id="sidebar-nav" class="menu menu-md p-4 gap-1 overflow-y-auto flex-1 custom-scrollbar">
+                    <!-- 动态加载导航项 -->
+                </ul>
+
+                <div class="p-6 border-t border-base-300 bg-base-200/50">
+                    <div class="form-control bg-base-100 rounded-2xl p-4 shadow-sm border border-base-300">
+                        <label class="label cursor-pointer justify-between py-0">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-lg bg-warning/10 flex items-center justify-center">
+                                    <i class="fa-solid fa-brain text-warning"></i>
+                                </div>
+                                <span class="text-sm font-bold opacity-70">默写模式</span>
+                            </div>
+                            <input type="checkbox" id="reciteModeToggle" class="toggle toggle-primary toggle-sm" />
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <dialog id="knowledge-index-modal" class="modal">
+        <div class="modal-box w-11/12 lg:w-[80vw] max-w-none p-0 overflow-hidden border border-base-300 shadow-2xl bg-base-100">
+            <div class="bg-base-200 px-6 py-4 flex justify-between items-center">
+                <h3 class="font-black text-base flex items-center gap-2">
+                    <i class="fa-solid fa-magnifying-glass text-primary"></i>
+                    知识点索引
+                </h3>
+                <form method="dialog">
+                    <button class="btn btn-sm btn-circle btn-ghost">✕</button>
+                </form>
+            </div>
+            <div class="p-6 space-y-4">
+                <input id="knowledgeIndexSearch" type="text" class="input input-bordered w-full" placeholder="搜索术语，例如：项目章程 / 立项管理文件 / EVM">
+                <div id="knowledgeIndexList" class="max-h-[60vh] overflow-y-auto custom-scrollbar"></div>
+            </div>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
+
+    <!-- 引入数据 -->
+    <script src="js/data.js"></script>
+    <!-- 引入业务逻辑 -->
+    <script src="js/app.js"></script>
+</body>
+</html>

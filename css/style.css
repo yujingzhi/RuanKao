@@ -1,0 +1,175 @@
+/* 基础变量与全局样式 */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --primary: #2563eb;
+    --primary-focus: #1d4ed8;
+    --secondary: #6366f1;
+    --accent: #10b981;
+    
+    /* 语义化 ITTO 配色 - 浅色模式 */
+    --itto-blue-bg: rgba(37, 99, 235, 0.05);
+    --itto-blue-text: #1d4ed8;
+    --itto-blue-border: rgba(37, 99, 235, 0.1);
+    
+    --itto-emerald-bg: rgba(16, 185, 129, 0.05);
+    --itto-emerald-text: #059669;
+    --itto-emerald-border: rgba(16, 185, 129, 0.1);
+    
+    --itto-orange-bg: rgba(249, 115, 22, 0.05);
+    --itto-orange-text: #c2410c;
+    --itto-orange-border: rgba(249, 115, 22, 0.1);
+
+    /* 语义化状态配色 - 浅色模式 */
+    --status-error-bg: rgba(239, 68, 68, 0.05);
+    --status-error-text: #b91c1c;
+    --status-warning-bg: rgba(245, 158, 11, 0.05);
+    --status-warning-text: #b45309;
+    --status-primary-bg: rgba(37, 99, 235, 0.05);
+    --status-primary-text: #1d4ed8;
+}
+
+[data-theme="dark"] {
+    /* 语义化 ITTO 配色 - 深色模式 */
+    --itto-blue-bg: rgba(59, 130, 246, 0.15);
+    --itto-blue-text: #93c5fd;
+    --itto-blue-border: rgba(59, 130, 246, 0.4);
+    
+    --itto-emerald-bg: rgba(52, 211, 153, 0.15);
+    --itto-emerald-text: #6ee7b7;
+    --itto-emerald-border: rgba(52, 211, 153, 0.4);
+    
+    --itto-orange-bg: rgba(251, 146, 60, 0.15);
+    --itto-orange-text: #fdba74;
+    --itto-orange-border: rgba(251, 146, 60, 0.4);
+
+    /* 语义化状态配色 - 深色模式 */
+    --status-error-bg: rgba(248, 113, 113, 0.15);
+    --status-error-text: #fca5a5;
+    --status-warning-bg: rgba(251, 191, 36, 0.15);
+    --status-warning-text: #fcd34d;
+    --status-primary-bg: rgba(96, 165, 250, 0.15);
+    --status-primary-text: #bfdbfe;
+}
+
+/* 预定义的语义化容器类 */
+.itto-box-blue { background-color: var(--itto-blue-bg); color: var(--itto-blue-text); border: 1px solid var(--itto-blue-border); }
+.itto-box-emerald { background-color: var(--itto-emerald-bg); color: var(--itto-emerald-text); border: 1px solid var(--itto-emerald-border); }
+.itto-box-orange { background-color: var(--itto-orange-bg); color: var(--itto-orange-text); border: 1px solid var(--itto-orange-border); }
+
+.status-box-error { background-color: var(--status-error-bg); color: var(--status-error-text); }
+.status-box-warning { background-color: var(--status-warning-bg); color: var(--status-warning-text); }
+.status-box-primary { background-color: var(--status-primary-bg); color: var(--status-primary-text); }
+
+/* 全局文字明度优化 */
+[data-theme="dark"] .text-base-content\/70 { color: rgba(255, 255, 255, 0.7); }
+[data-theme="dark"] .text-base-content\/80 { color: rgba(255, 255, 255, 0.85); }
+[data-theme="dark"] .opacity-80 { opacity: 0.95; }
+[data-theme="dark"] .opacity-50 { opacity: 0.7; }
+
+/* 暗色模式下 Primary 文字颜色提亮 */
+[data-theme="dark"] .text-primary { color: #93c5fd !important; }
+[data-theme="dark"] .border-primary { border-color: #93c5fd !important; }
+[data-theme="dark"] .bg-primary\/10 { background-color: rgba(147, 197, 253, 0.15) !important; }
+
+/* 自定义滚动条 */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--bc) / 0.1);
+    border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--bc) / 0.2);
+}
+
+/* 默写模式提交后结果展示 */
+.recite-result-correct { color: #059669 !important; border-bottom-color: #059669 !important; font-weight: bold; }
+.recite-result-wrong { color: #dc2626 !important; border-bottom-color: #dc2626 !important; text-decoration: line-through; }
+.recite-result-missing { color: #ea580c !important; font-size: 11px; margin-top: 2px; }
+
+/* 默写模式动作栏容器 */
+.recite-actions {
+    display: none;
+    padding-top: 1rem;
+    margin-top: 1rem;
+    border-top: 1px dashed hsl(var(--bc) / 0.1);
+}
+.recitation-mode .recite-actions {
+    display: flex;
+}
+
+.recite-mode-element {
+    display: none;
+}
+.recitation-mode .view-mode-element {
+    display: none !important;
+}
+.recitation-mode .recite-mode-element {
+    display: block !important;
+}
+.recitation-mode .recitation-hide {
+    display: none !important;
+}
+
+/* 结果统计面板 */
+.stats-card {
+    background: linear-gradient(135deg, hsl(var(--p)) 0%, hsl(var(--pf)) 100%);
+    color: hsl(var(--pc));
+}
+
+
+/* 导航项激活态微调 */
+.menu li > *:not(ul):not(details).active, 
+.menu li > details > summary.active {
+    background-color: hsl(var(--p));
+    color: hsl(var(--pc));
+    font-weight: 800;
+}
+
+/* 卡片悬停效果 */
+.card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card:hover {
+    transform: translateY(-4px);
+}
+
+/* ITTO 列表项交互 */
+.cursor-help {
+    cursor: help;
+    text-decoration-style: dashed;
+    text-underline-offset: 4px;
+    transition: all 0.2s ease;
+}
+.cursor-help:hover {
+    color: hsl(var(--p));
+    text-decoration-thickness: 2px;
+}
+
+/* 动画效果 */
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up {
+    animation: slideUp 0.5s ease-out forwards;
+}
+
+/* 输入框样式适配 */
+.recite-mode-element input {
+    background: transparent;
+    border-bottom: 1px dashed hsl(var(--bc) / 0.2);
+    transition: border-color 0.3s ease;
+}
+.recite-mode-element input:focus {
+    border-bottom-color: hsl(var(--p));
+}
