@@ -238,6 +238,11 @@ function renderArea(areaId) {
 
     // 渲染卡片 (适配两种模式)
     if (area.type === 'knowledge') {
+        if (area.id === 'pm-intro') {
+            if (guideCard) guideCard.classList.add('hidden');
+            container.innerHTML = renderPmIntroDashboard(area);
+            return;
+        }
         if (area.id === 'pm-init') {
             if (guideCard) guideCard.classList.add('hidden');
             container.innerHTML = renderPmInitDashboard(area);
@@ -403,6 +408,409 @@ function renderArea(areaId) {
             </div>
         `).join('');
     }
+}
+
+function renderPmIntroDashboard(area) {
+    const esc = (s) => (s || '').toString().replace(/'/g, '&#39;');
+    const uniq = (arr) => Array.from(new Set((arr || []).filter(Boolean)));
+    const has = (term) => Object.prototype.hasOwnProperty.call(knowledgeBase, term);
+
+    const termChips = (terms, size) => {
+        const valid = uniq(terms).filter(has);
+        if (!valid.length) return '';
+        const btnClass = size === 'sm' ? 'btn btn-xs btn-outline' : 'btn btn-sm btn-outline';
+        return `
+            <div class="flex flex-wrap gap-2">
+                ${valid.map(t => `<button class="${btnClass}" onclick="showKnowledge('${esc(t)}', event)">${t}</button>`).join('')}
+            </div>
+        `;
+    };
+
+    const renderList = (items) => `
+        <div class="space-y-2">
+            ${(items || []).map(x => `
+                <div class="flex items-start gap-3">
+                    <div class="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-none opacity-50"></div>
+                    <div class="text-sm text-base-content/80 leading-relaxed">${x}</div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+
+    const renderExamList = (items) => {
+        const list = (items || []).filter(Boolean);
+        if (!list.length) return '';
+        return `
+            <div class="mt-4 p-4 rounded-2xl bg-base-200/40 border border-base-300">
+                <div class="flex items-center gap-2 mb-3">
+                    <div class="w-8 h-8 rounded-xl bg-error/10 flex items-center justify-center">
+                        <i class="fa-solid fa-circle-exclamation text-error text-xs"></i>
+                    </div>
+                    <div class="text-xs font-black uppercase tracking-widest opacity-60">高频考点</div>
+                </div>
+                <div class="space-y-2">
+                    ${list.map(e => `
+                        <div class="text-sm text-base-content/80 font-medium">
+                            <span class="badge badge-error badge-sm text-white font-black mr-2">考点</span>
+                            ${e}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    };
+
+    const points = Array.isArray(area.knowledgePoints) ? area.knowledgePoints : [];
+    const allTerms = uniq(points.flatMap(p => p.terms || []));
+
+    const hero = `
+        <div class="card bg-base-100 border border-base-300 shadow-xl overflow-hidden">
+            <div class="p-6 lg:p-8 bg-gradient-to-br from-primary/10 via-base-100 to-secondary/10">
+                <div class="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between">
+                    <div class="space-y-3">
+                        <div class="flex flex-wrap gap-2 items-center">
+                            <span class="badge badge-primary badge-outline font-black">第6章</span>
+                            <span class="badge badge-ghost font-black opacity-60">项目管理概论</span>
+                            <span class="badge badge-outline font-black opacity-60">基础高频</span>
+                            <span class="badge badge-outline font-black opacity-60">概念区分/结构/过程组</span>
+                        </div>
+                        <div class="text-2xl lg:text-3xl font-black tracking-tight">一图建立项目管理“底层地图”</div>
+                        <div class="text-sm text-base-content/70 leading-relaxed max-w-3xl">
+                            这章的核心不是背长段落，而是把四件事串起来：<span class="font-black">项目是什么</span>、<span class="font-black">怎么管</span>、<span class="font-black">在什么组织里管</span>、<span class="font-black">按什么流程推进</span>。
+                        </div>
+                        <div class="pt-1">${termChips(['项目', '运营', '项目管理', '三重制约', '组织结构', '项目生命周期', '过程组', '项目发起人', '项目经理', '项目团队', '干系人', 'PMO', '事业环境因素', '组织过程资产'], 'sm')}</div>
+                    </div>
+                    <div class="stats shadow border border-base-300 bg-base-100">
+                        <div class="stat py-4">
+                            <div class="stat-title">先记</div>
+                            <div class="stat-value text-primary text-2xl">临时 + 独特</div>
+                            <div class="stat-desc">项目的两大特征</div>
+                        </div>
+                        <div class="stat py-4">
+                            <div class="stat-title">再记</div>
+                            <div class="stat-value text-secondary text-2xl">启规执监收</div>
+                            <div class="stat-desc">五大过程组</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 p-5 rounded-2xl border border-base-300 bg-base-100/70">
+                    <div class="text-xs font-black uppercase tracking-widest opacity-60 mb-4">概念总览图</div>
+                    <ul class="steps steps-vertical lg:steps-horizontal w-full">
+                        <li class="step step-primary"><button class="btn btn-ghost btn-sm font-black" onclick="showKnowledge('项目', event)">项目</button></li>
+                        <li class="step step-primary"><button class="btn btn-ghost btn-sm font-black" onclick="showKnowledge('组织结构', event)">组织结构</button></li>
+                        <li class="step step-primary"><button class="btn btn-ghost btn-sm font-black" onclick="showKnowledge('项目生命周期', event)">生命周期</button></li>
+                        <li class="step step-primary"><button class="btn btn-ghost btn-sm font-black" onclick="showKnowledge('过程组', event)">过程组</button></li>
+                        <li class="step step-primary"><span class="font-black">交付价值</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const conceptCompare = `
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="card bg-base-100 border border-base-300 shadow-xl">
+                <div class="p-6 lg:p-8">
+                    <div class="flex items-center justify-between gap-4">
+                        <div>
+                            <div class="text-xs font-black uppercase tracking-widest opacity-60">概念对比</div>
+                            <div class="text-xl font-black tracking-tight mt-1">项目 vs 运营</div>
+                        </div>
+                        ${termChips(['项目', '运营'], 'sm')}
+                    </div>
+                    <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-5 rounded-2xl border border-base-300 bg-base-200/20">
+                            <div class="flex items-center gap-2 mb-3">
+                                <div class="w-9 h-9 rounded-2xl bg-primary/10 flex items-center justify-center">
+                                    <i class="fa-solid fa-flag-checkered text-primary"></i>
+                                </div>
+                                <div class="font-black">项目</div>
+                            </div>
+                            ${renderList(['临时性：有明确开始与结束', '独特性：产出不重复', '目标导向：交付成果与价值'])}
+                        </div>
+                        <div class="p-5 rounded-2xl border border-base-300 bg-base-200/20">
+                            <div class="flex items-center gap-2 mb-3">
+                                <div class="w-9 h-9 rounded-2xl bg-secondary/10 flex items-center justify-center">
+                                    <i class="fa-solid fa-gear text-secondary"></i>
+                                </div>
+                                <div class="font-black">运营</div>
+                            </div>
+                            ${renderList(['持续性：长期运行不断档', '重复性：产出可复制', '稳定性：维持业务与效率'])}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card bg-base-100 border border-base-300 shadow-xl">
+                <div class="p-6 lg:p-8">
+                    <div class="flex items-center justify-between gap-4">
+                        <div>
+                            <div class="text-xs font-black uppercase tracking-widest opacity-60">约束框架</div>
+                            <div class="text-xl font-black tracking-tight mt-1">三重制约怎么出题</div>
+                        </div>
+                        ${termChips(['三重制约'], 'sm')}
+                    </div>
+                    <div class="mt-5">
+                        <div class="p-5 rounded-2xl border border-base-300 bg-base-200/20">
+                            <div class="flex items-center gap-2 mb-3">
+                                <div class="w-9 h-9 rounded-2xl bg-warning/10 flex items-center justify-center">
+                                    <i class="fa-solid fa-triangle-exclamation text-warning"></i>
+                                </div>
+                                <div class="font-black">做题抓手</div>
+                            </div>
+                            ${renderList(['范围/进度/成本是联动关系', '变更会影响至少一个约束', '真实成功还要看价值、风险与满意度'])}
+                            <div class="mt-4 text-sm text-base-content/70">
+                                题干出现“加需求/赶工/压成本”，通常是在考你如何权衡约束与风险。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const structure = `
+        <div class="card bg-base-100 border border-base-300 shadow-xl">
+            <div class="p-6 lg:p-8">
+                <div class="flex items-start lg:items-center justify-between gap-4 flex-col lg:flex-row">
+                    <div>
+                        <div class="text-xs font-black uppercase tracking-widest opacity-60">组织结构</div>
+                        <div class="text-xl font-black tracking-tight mt-1">PM 权力梯度（高频选择题）</div>
+                    </div>
+                    ${termChips(['组织结构', '职能型组织', '矩阵型组织', '项目型组织', '弱矩阵', '平衡矩阵', '强矩阵'], 'sm')}
+                </div>
+
+                <div class="mt-6 p-5 rounded-2xl border border-base-300 bg-base-100/70">
+                    <div class="text-xs font-black uppercase tracking-widest opacity-60 mb-4">梯度图</div>
+                    <ul class="steps steps-vertical lg:steps-horizontal w-full">
+                        <li class="step step-primary"><button class="btn btn-ghost btn-sm font-black" onclick="showKnowledge('职能型组织', event)">职能型</button></li>
+                        <li class="step step-primary"><button class="btn btn-ghost btn-sm font-black" onclick="showKnowledge('弱矩阵', event)">弱矩阵</button></li>
+                        <li class="step step-primary"><button class="btn btn-ghost btn-sm font-black" onclick="showKnowledge('平衡矩阵', event)">平衡矩阵</button></li>
+                        <li class="step step-primary"><button class="btn btn-ghost btn-sm font-black" onclick="showKnowledge('强矩阵', event)">强矩阵</button></li>
+                        <li class="step step-primary"><button class="btn btn-ghost btn-sm font-black" onclick="showKnowledge('项目型组织', event)">项目型</button></li>
+                    </ul>
+                    <div class="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-3">
+                        <div class="p-4 rounded-2xl border border-base-300 bg-base-200/30">
+                            <div class="text-xs font-black opacity-60 mb-2">一眼辨识</div>
+                            <div class="text-sm text-base-content/80">资源归部门、PM 协调为主 → 偏职能/弱矩阵</div>
+                        </div>
+                        <div class="p-4 rounded-2xl border border-base-300 bg-base-200/30">
+                            <div class="text-xs font-black opacity-60 mb-2">冲突来源</div>
+                            <div class="text-sm text-base-content/80">矩阵型常见“资源冲突”，靠机制与沟通解决</div>
+                        </div>
+                        <div class="p-4 rounded-2xl border border-base-300 bg-base-200/30">
+                            <div class="text-xs font-black opacity-60 mb-2">答题表达</div>
+                            <div class="text-sm text-base-content/80">用“权力/资源/汇报线”三件套描述结构</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 overflow-x-auto">
+                    <table class="table table-zebra">
+                        <thead>
+                            <tr>
+                                <th class="w-32">结构</th>
+                                <th>PM 权力</th>
+                                <th>资源归属</th>
+                                <th>典型特征</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>职能型</th>
+                                <td><span class="badge badge-ghost font-black opacity-60">最弱</span></td>
+                                <td>职能部门</td>
+                                <td>PM 多为协调；部门目标优先</td>
+                            </tr>
+                            <tr>
+                                <th>弱矩阵</th>
+                                <td>偏弱</td>
+                                <td>职能部门</td>
+                                <td>接近职能型；职能经理更强势</td>
+                            </tr>
+                            <tr>
+                                <th>平衡矩阵</th>
+                                <td>均衡</td>
+                                <td>共享</td>
+                                <td>双线汇报；冲突需要协商</td>
+                            </tr>
+                            <tr>
+                                <th>强矩阵</th>
+                                <td>偏强</td>
+                                <td>共享</td>
+                                <td>接近项目型；PM 更能调度资源</td>
+                            </tr>
+                            <tr>
+                                <th>项目型</th>
+                                <td><span class="badge badge-success badge-outline font-black">最强</span></td>
+                                <td>项目团队</td>
+                                <td>团队多为全职；响应快，沟通直接</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-6 p-5 rounded-2xl border border-base-300 bg-base-200/20">
+                    <div class="flex items-center justify-between gap-4 flex-col lg:flex-row">
+                        <div>
+                            <div class="font-black text-base">PMO（项目管理办公室）</div>
+                            <div class="text-sm text-base-content/70 mt-1">理解“支持/控制/指令”三种定位，题目基本就能秒选。</div>
+                        </div>
+                        ${termChips(['PMO'], 'sm')}
+                    </div>
+                    <div class="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
+                        <div class="p-4 rounded-2xl border border-base-300 bg-base-100/70">
+                            <div class="badge badge-outline font-black opacity-60 mb-2">支持型</div>
+                            <div class="text-sm text-base-content/80">提供模板、培训、方法论与咨询</div>
+                        </div>
+                        <div class="p-4 rounded-2xl border border-base-300 bg-base-100/70">
+                            <div class="badge badge-outline font-black opacity-60 mb-2">控制型</div>
+                            <div class="text-sm text-base-content/80">要求合规、审计与标准化流程</div>
+                        </div>
+                        <div class="p-4 rounded-2xl border border-base-300 bg-base-100/70">
+                            <div class="badge badge-outline font-black opacity-60 mb-2">指令型</div>
+                            <div class="text-sm text-base-content/80">直接管理项目，权力最大</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const lifecycle = `
+        <div class="card bg-base-100 border border-base-300 shadow-xl">
+            <div class="p-6 lg:p-8">
+                <div class="flex items-start lg:items-center justify-between gap-4 flex-col lg:flex-row">
+                    <div>
+                        <div class="text-xs font-black uppercase tracking-widest opacity-60">生命周期与过程组</div>
+                        <div class="text-xl font-black tracking-tight mt-1">用一条主线记牢：启规执监收</div>
+                    </div>
+                    ${termChips(['项目生命周期', '过程组'], 'sm')}
+                </div>
+
+                <div class="mt-6 p-5 rounded-2xl border border-base-300 bg-base-100/70">
+                    <div class="text-xs font-black uppercase tracking-widest opacity-60 mb-4">过程组图</div>
+                    <ul class="steps steps-vertical lg:steps-horizontal w-full">
+                        <li class="step step-primary"><span class="font-black">启动</span></li>
+                        <li class="step step-primary"><span class="font-black">规划</span></li>
+                        <li class="step step-primary"><span class="font-black">执行</span></li>
+                        <li class="step step-primary"><span class="font-black">监控</span></li>
+                        <li class="step step-primary"><span class="font-black">收尾</span></li>
+                    </ul>
+                    <div class="mt-4 text-sm text-base-content/70">
+                        过程组不是阶段；一个阶段里可能同时发生规划与监控活动。
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const roles = `
+        <div class="card bg-base-100 border border-base-300 shadow-xl">
+            <div class="p-6 lg:p-8">
+                <div class="flex items-start lg:items-center justify-between gap-4 flex-col lg:flex-row">
+                    <div>
+                        <div class="text-xs font-black uppercase tracking-widest opacity-60">角色速记</div>
+                        <div class="text-xl font-black tracking-tight mt-1">题干写错责任人，就按这张卡纠偏</div>
+                    </div>
+                    ${termChips(['项目发起人', '项目经理', '项目团队', '干系人', '项目章程'], 'sm')}
+                </div>
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="p-5 rounded-2xl border border-base-300 bg-base-200/20">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+                                <i class="fa-solid fa-user-tie text-primary"></i>
+                            </div>
+                            <div class="font-black">发起人/赞助人</div>
+                        </div>
+                        ${renderList(['提供资源支持', '批准关键决策', '发布项目章程，正式授权项目成立'])}
+                        <div class="mt-4">${termChips(['项目发起人', '项目章程'], 'sm')}</div>
+                    </div>
+                    <div class="p-5 rounded-2xl border border-base-300 bg-base-200/20">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-10 h-10 rounded-2xl bg-secondary/10 flex items-center justify-center">
+                                <i class="fa-solid fa-diagram-project text-secondary"></i>
+                            </div>
+                            <div class="font-black">项目经理</div>
+                        </div>
+                        ${renderList(['对目标负责（范围/进度/成本/风险）', '整合与协调各方', '平衡约束条件与干系人期望'])}
+                        <div class="mt-4">${termChips(['项目经理', '组织结构'], 'sm')}</div>
+                    </div>
+                    <div class="p-5 rounded-2xl border border-base-300 bg-base-200/20">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-10 h-10 rounded-2xl bg-warning/10 flex items-center justify-center">
+                                <i class="fa-solid fa-people-group text-warning"></i>
+                            </div>
+                            <div class="font-black">项目团队</div>
+                        </div>
+                        ${renderList(['执行项目工作', '产出可交付成果', '在矩阵组织中常见双线汇报'])}
+                        <div class="mt-4">${termChips(['项目团队', '矩阵型组织'], 'sm')}</div>
+                    </div>
+                    <div class="p-5 rounded-2xl border border-base-300 bg-base-200/20">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-10 h-10 rounded-2xl bg-accent/10 flex items-center justify-center">
+                                <i class="fa-solid fa-user-group text-accent"></i>
+                            </div>
+                            <div class="font-black">干系人</div>
+                        </div>
+                        ${renderList(['能影响/被影响/自认为会被影响', '关键是持续沟通与管理期望', '题干常把“谁需要被沟通”写漏'])}
+                        <div class="mt-4">${termChips(['干系人'], 'sm')}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const collapses = points.map((p, idx) => `
+        <div class="collapse collapse-arrow bg-base-100 border border-base-300 rounded-2xl">
+            <input type="checkbox" ${idx === 0 ? 'checked' : ''} />
+            <div class="collapse-title text-base font-black flex items-center gap-3">
+                <span class="badge badge-outline font-black opacity-60">${p.id || (idx + 1)}</span>
+                <span class="flex-1 min-w-0 truncate">${p.title || '未命名'}</span>
+            </div>
+            <div class="collapse-content">
+                <div class="pt-2 pb-5 space-y-4">
+                    ${termChips(p.terms || [], 'sm')}
+                    ${renderList((p.content || []).map(x => x.toString()))}
+                    ${renderExamList(p.exam || [])}
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+    return `
+        <div class="space-y-8">
+            ${hero}
+            ${conceptCompare}
+            ${structure}
+            ${roles}
+            ${lifecycle}
+            <div class="card bg-base-100 border border-base-300 shadow-xl">
+                <div class="p-6 lg:p-8">
+                    <div class="flex items-center justify-between gap-4">
+                        <div>
+                            <div class="text-xs font-black uppercase tracking-widest opacity-60">学习笔记</div>
+                            <div class="text-xl font-black tracking-tight mt-1">展开即答案（按考题问法整理）</div>
+                        </div>
+                    </div>
+                    <div class="mt-6 space-y-4">${collapses}</div>
+                </div>
+            </div>
+            <div class="card bg-base-100 border border-base-300 shadow-xl">
+                <div class="p-6 lg:p-8">
+                    <div class="flex items-center justify-between gap-4">
+                        <div>
+                            <div class="text-xs font-black uppercase tracking-widest opacity-60">快速导航</div>
+                            <div class="text-xl font-black tracking-tight mt-1">本章常用术语（点一个就能学）</div>
+                        </div>
+                    </div>
+                    <div class="mt-5">
+                        ${termChips(allTerms, 'sm')}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 function renderPmInitDashboard(area) {
