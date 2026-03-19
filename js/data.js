@@ -1147,12 +1147,44 @@ export const textbookToc = [
     }
 ];
 
+export const textbookContentSlots = {
+    '6.1': { id: '6.1', title: 'PMBOK的发展', ref: { chapter: 6, page: 183 }, summary: '', keyPoints: [], pitfalls: [], examPatterns: [], terms: [], relations: [] },
+    '6.2.1': { id: '6.2.1', title: '项目基础', ref: { chapter: 6, page: 184 }, summary: '', keyPoints: [], pitfalls: [], examPatterns: [], terms: [], relations: [] },
+    '6.2.2': { id: '6.2.2', title: '项目管理的重要性', ref: { chapter: 6, page: 186 }, summary: '', keyPoints: [], pitfalls: [], examPatterns: [], terms: [], relations: [] },
+    '6.2.3': { id: '6.2.3', title: '项目成功的标准', ref: { chapter: 6, page: 187 }, summary: '', keyPoints: [], pitfalls: [], examPatterns: [], terms: [], relations: [] },
+    '6.2.4': { id: '6.2.4', title: '项目、项目集、项目组合和运营管理之间的关系', ref: { chapter: 6, page: 187 }, summary: '', keyPoints: [], pitfalls: [], examPatterns: [], terms: [], relations: [] },
+    '6.2.5': { id: '6.2.5', title: '项目内外部运行环境', ref: { chapter: 6, page: 191 }, summary: '', keyPoints: [], pitfalls: [], examPatterns: [], terms: [], relations: [] },
+    '6.2.6': { id: '6.2.6', title: '组织系统', ref: { chapter: 6, page: 192 }, summary: '', keyPoints: [], pitfalls: [], examPatterns: [], terms: [], relations: [] },
+    '6.2.7': { id: '6.2.7', title: '项目管理和产品管理', ref: { chapter: 6, page: 194 }, summary: '', keyPoints: [], pitfalls: [], examPatterns: [], terms: [], relations: [] },
+    '6.3.1': { id: '6.3.1', title: '项目经理的定义', ref: { chapter: 6, page: 196 }, summary: '', keyPoints: [], pitfalls: [], examPatterns: [], terms: [], relations: [] },
+    '6.3.2': { id: '6.3.2', title: '项目经理的影响力范围', ref: { chapter: 6, page: 196 }, summary: '', keyPoints: [], pitfalls: [], examPatterns: [], terms: [], relations: [] },
+    '6.3.3': { id: '6.3.3', title: '项目经理的能力', ref: { chapter: 6, page: 198 }, summary: '', keyPoints: [], pitfalls: [], examPatterns: [], terms: [], relations: [] },
+    '6.4.1': { id: '6.4.1', title: '项目管理原则', ref: { chapter: 6, page: 202 }, summary: '', keyPoints: [], pitfalls: [], examPatterns: [], terms: [], relations: [] },
+    '6.4.2': { id: '6.4.2', title: '项目生命周期和项目阶段', ref: { chapter: 6, page: 213 }, summary: '', keyPoints: [], pitfalls: [], examPatterns: [], terms: [], relations: [] },
+    '6.4.3': { id: '6.4.3', title: '项目管理过程组', ref: { chapter: 6, page: 216 }, summary: '', keyPoints: [], pitfalls: [], examPatterns: [], terms: [], relations: [] },
+    '6.4.4': { id: '6.4.4', title: '项目管理知识领域', ref: { chapter: 6, page: 219 }, summary: '', keyPoints: [], pitfalls: [], examPatterns: [], terms: [], relations: [] },
+    '6.4.5': { id: '6.4.5', title: '项目绩效域', ref: { chapter: 6, page: 221 }, summary: '', keyPoints: [], pitfalls: [], examPatterns: [], terms: [], relations: [] },
+    '6.4.6': { id: '6.4.6', title: '价值交付系统', ref: { chapter: 6, page: 221 }, summary: '', keyPoints: [], pitfalls: [], examPatterns: [], terms: [], relations: [] },
+
+    '7.1': { id: '7.1', title: '项目建议与立项申请', ref: { chapter: 7, page: 225 }, summary: '', keyPoints: [], pitfalls: [], examPatterns: [], terms: [], relations: [] },
+    '7.2.1': { id: '7.2.1', title: '可行性研究的内容', ref: { chapter: 7, page: 225 }, summary: '', keyPoints: [], pitfalls: [], examPatterns: [], terms: [], relations: [] },
+    '7.2.2': { id: '7.2.2', title: '初步可行性研究', ref: { chapter: 7, page: 228 }, summary: '', keyPoints: [], pitfalls: [], examPatterns: [], terms: [], relations: [] },
+    '7.2.3': { id: '7.2.3', title: '详细可行性研究', ref: { chapter: 7, page: 230 }, summary: '', keyPoints: [], pitfalls: [], examPatterns: [], terms: [], relations: [] },
+    '7.3': { id: '7.3', title: '项目评估与决策', ref: { chapter: 7, page: 234 }, summary: '', keyPoints: [], pitfalls: [], examPatterns: [], terms: [], relations: [] }
+};
+
 // 数据层：满血全量10大管理、49个过程数据库
 export const pmbokData = [
     { 
         id: "textbook-toc", chapter: 0, name: "教材目录（第4版）", icon: "fa-solid fa-book", type: "knowledge",
         desc: "以《信息系统项目管理师教程（第4版）》目录作为全站知识库与章节细化的唯一权威口径。", 
         mnemonic: "目录=覆盖清单", 
+        knowledgePoints: [] 
+    },
+    { 
+        id: "content-workbench", chapter: 0, name: "内容建设工作台", icon: "fa-solid fa-pen-ruler", type: "knowledge",
+        desc: "按教材小节颗粒度管理内容：模板、覆盖、进度与验收口径（先做第6/7章样板）。", 
+        mnemonic: "先样板，再规模化", 
         knowledgePoints: [] 
     },
     { 

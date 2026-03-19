@@ -1,4 +1,4 @@
-import { knowledgeBase, pmbokData, textbookToc } from './data.js';
+import { knowledgeBase, pmbokData, textbookToc, textbookContentSlots } from './data.js';
 import { getKnowledgeDashboardRenderer } from './renderers/registry.js';
 
 // 核心变量池
@@ -194,6 +194,8 @@ function renderSidebar() {
     sidebarNav.innerHTML = pmbokData.map(area => {
         const count = area.id === 'textbook-toc'
             ? (Array.isArray(textbookToc) ? textbookToc.length : 0)
+            : area.id === 'content-workbench'
+            ? Object.keys(textbookContentSlots || {}).length
             : area.type === 'knowledge' 
             ? (area.knowledgePoints ? area.knowledgePoints.length : 0) 
             : (area.processes ? area.processes.length : 0);
@@ -2688,6 +2690,15 @@ window.filterTextbookToc = function(event) {
     const items = document.querySelectorAll('[data-toc-text]');
     items.forEach(el => {
         const t = (el.getAttribute('data-toc-text') || '').toLowerCase();
+        const ok = !q || t.includes(q);
+        el.classList.toggle('hidden', !ok);
+    });
+};
+window.filterContentWorkbench = function(event) {
+    const q = (event?.target?.value || '').toString().trim().toLowerCase();
+    const items = document.querySelectorAll('[data-slot-text]');
+    items.forEach(el => {
+        const t = (el.getAttribute('data-slot-text') || '').toLowerCase();
         const ok = !q || t.includes(q);
         el.classList.toggle('hidden', !ok);
     });
