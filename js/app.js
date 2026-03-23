@@ -373,6 +373,16 @@ function renderArea(areaId) {
                         </div>
                         <div class="flex items-center gap-2">
                             <div id="stats-${process.id}" class="hidden recitation-mode-only text-xs font-black mr-2"></div>
+                            <button onclick="checkRecitation('${process.id}')" 
+                                    class="btn btn-sm btn-primary recitation-mode-only"
+                                    title="提交默写答案">
+                                <i class="fa-solid fa-check-circle mr-1"></i>提交
+                            </button>
+                            <button onclick="resetRecitation('${process.id}')" 
+                                    class="btn btn-sm btn-ghost border-base-300 recitation-mode-only"
+                                    title="重置默写">
+                                <i class="fa-solid fa-rotate-right mr-1"></i>重置
+                            </button>
                             <div class="tooltip tooltip-left" data-tip="${masteredProcesses.has(process.id) ? '取消掌握' : '标记已掌握'}">
                                 <button onclick="toggleMastery('${process.id}', '${areaId}')" 
                                         class="btn btn-circle btn-sm ${masteredProcesses.has(process.id) ? 'btn-success text-white' : 'btn-ghost border-base-300'}">

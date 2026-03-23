@@ -120,6 +120,14 @@ html, body {
     display: none !important;
 }
 
+/* 默写模式专属按钮 */
+.recitation-mode-only {
+    display: none;
+}
+.recitation-mode .recitation-mode-only {
+    display: inline-flex !important;
+}
+
 /* 结果统计面板 */
 .stats-card {
     background: linear-gradient(135deg, hsl(var(--p)) 0%, hsl(var(--pf)) 100%);
