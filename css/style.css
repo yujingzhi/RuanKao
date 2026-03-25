@@ -92,9 +92,24 @@ html, body {
 }
 
 /* 默写模式提交后结果展示 */
-.recite-result-correct { color: #059669 !important; border-bottom-color: #059669 !important; font-weight: bold; }
-.recite-result-wrong { color: #dc2626 !important; border-bottom-color: #dc2626 !important; text-decoration: line-through; }
+/* 正确答案保持正常显示，不添加特殊样式 */
+/* 错误答案标红删除线 */
+.recite-result-correct { /* 保持默认样式 */ }
+.recite-result-wrong { color: #dc2626 !important; border-bottom-color: #dc2626 !important; text-decoration: line-through; background-color: rgba(220, 38, 38, 0.1); }
 .recite-result-missing { color: #ea580c !important; font-size: 11px; margin-top: 2px; }
+
+/* 退出默写模式时对未匹配字段进行重点标注 */
+.recitation-exit-mode .recite-input.recite-result-wrong {
+    border: 2px solid #dc2626 !important;
+    border-radius: 4px;
+    background-color: rgba(220, 38, 38, 0.15) !important;
+    box-shadow: 0 0 8px rgba(220, 38, 38, 0.3);
+}
+.recitation-exit-mode .recite-input.recite-result-correct:not(:placeholder-shown) {
+    border: 2px solid #059669 !important;
+    border-radius: 4px;
+    background-color: rgba(5, 150, 105, 0.1) !important;
+}
 
 /* 默写模式动作栏容器 */
 .recite-actions {

@@ -3,7 +3,7 @@ import { getKnowledgeDashboardRenderer } from './renderers/registry.js';
 
 // 核心变量池
 let currentAreaId = 'integration';
-const masteredProcesses = new Set(); // 存储已掌握的过程ID
+const masteredProcesses = new Map(); // 存储已掌握的过程ID，按章节区分
 
 const knowledgeIndex = [];
 
@@ -40,15 +40,34 @@ function initApp() {
     buildKnowledgeIndex();
     initKnowledgeIndexUI();
     initKnowledgePanelUI();
+    updateAccuracyDisplay();
     
     // 监听默写模式切换
     document.getElementById('reciteModeToggle').addEventListener('change', function(e) {
         if (e.target.checked) {
             document.body.classList.add('recitation-mode');
+            document.body.classList.remove('recitation-exit-mode');
             document.querySelectorAll('.recitation-mode-only').forEach(el => el.classList.remove('hidden'));
         } else {
             document.body.classList.remove('recitation-mode');
+            document.body.classList.add('recitation-exit-mode');
             document.querySelectorAll('.recitation-mode-only').forEach(el => el.classList.add('hidden'));
+            setTimeout(function() {
+                document.body.classList.remove('recitation-exit-mode');
+            }, 3000);
+        }
+    });
+
+    // 为提交和重置按钮添加事件监听器
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.check-recitation-btn')) {
+            const btn = e.target.closest('.check-recitation-btn');
+            const processId = btn.getAttribute('data-process-id');
+            checkRecitation(processId);
+        } else if (e.target.closest('.reset-recitation-btn')) {
+            const btn = e.target.closest('.reset-recitation-btn');
+            const processId = btn.getAttribute('data-process-id');
+            resetRecitation(processId);
         }
     });
 
@@ -373,19 +392,19 @@ function renderArea(areaId) {
                         </div>
                         <div class="flex items-center gap-2">
                             <div id="stats-${process.id}" class="hidden recitation-mode-only text-xs font-black mr-2"></div>
-                            <button onclick="checkRecitation('${process.id}')" 
-                                    class="btn btn-sm btn-primary recitation-mode-only"
+                            <button data-process-id="${process.id}" 
+                                    class="btn btn-sm btn-primary recitation-mode-only check-recitation-btn"
                                     title="提交默写答案">
                                 <i class="fa-solid fa-check-circle mr-1"></i>提交
                             </button>
-                            <button onclick="resetRecitation('${process.id}')" 
-                                    class="btn btn-sm btn-ghost border-base-300 recitation-mode-only"
+                            <button data-process-id="${process.id}" 
+                                    class="btn btn-sm btn-ghost border-base-300 recitation-mode-only reset-recitation-btn"
                                     title="重置默写">
                                 <i class="fa-solid fa-rotate-right mr-1"></i>重置
                             </button>
-                            <div class="tooltip tooltip-left" data-tip="${masteredProcesses.has(process.id) ? '取消掌握' : '标记已掌握'}">
-                                <button onclick="toggleMastery('${process.id}', '${areaId}')" 
-                                        class="btn btn-circle btn-sm ${masteredProcesses.has(process.id) ? 'btn-success text-white' : 'btn-ghost border-base-300'}">
+                            <div class="tooltip tooltip-left" data-tip="${(masteredProcesses.get(areaId) || new Set()).has(process.id) ? '取消掌握' : '标记已掌握'}">
+                                <button onclick="toggleMastery('${process.id}', '${areaId}')"
+                                        class="btn btn-circle btn-sm ${(masteredProcesses.get(areaId) || new Set()).has(process.id) ? 'btn-success text-white' : 'btn-ghost border-base-300'}">
                                     <i class="fa-solid fa-check"></i>
                                 </button>
                             </div>
@@ -1846,6 +1865,7 @@ function renderIttoSection(process, typeKey, titleStr, iconChar, theme, listIcon
              <h4 class="flex items-center gap-3 text-xs font-black uppercase tracking-widest ${t.titleColor}">
                 <div class="w-6 h-6 rounded-lg ${t.bgIconColor} ${t.textIconColor} flex items-center justify-center text-[10px] shadow-lg shadow-current/20">${iconChar}</div>
                 ${titleStr}
+                <span class="recite-section-stats ml-2 hidden" data-type="${typeKey}"></span>
                 <span class="ml-auto badge badge-ghost badge-sm font-normal opacity-50">${expectedArr.length} 项</span>
             </h4>
             <div class="space-y-3">
@@ -1871,22 +1891,47 @@ function renderIttoSection(process, typeKey, titleStr, iconChar, theme, listIcon
 }
 
 function toggleMastery(processId, areaId) {
-    if (masteredProcesses.has(processId)) {
-        masteredProcesses.delete(processId);
-    } else {
-        masteredProcesses.add(processId);
+    if (!masteredProcesses.has(areaId)) {
+        masteredProcesses.set(areaId, new Set());
     }
+    const areaSet = masteredProcesses.get(areaId);
+    if (areaSet.has(processId)) {
+        areaSet.delete(processId);
+    } else {
+        areaSet.add(processId);
+    }
+    saveMasteredData();
     renderArea(areaId); 
 }
 
+function saveMasteredData() {
+    const data = {};
+    masteredProcesses.forEach((set, areaId) => {
+        data[areaId] = Array.from(set);
+    });
+    localStorage.setItem('mastered_data', JSON.stringify(data));
+}
+
+function loadMasteredData() {
+    const data = localStorage.getItem('mastered_data');
+    if (data) {
+        const parsed = JSON.parse(data);
+        Object.keys(parsed).forEach(areaId => {
+            masteredProcesses.set(areaId, new Set(parsed[areaId]));
+        });
+    }
+}
+
 function updateProgress() {
-    const totalProcesses = pmbokData.reduce((acc, area) => {
-        const count = area.type === 'knowledge' 
-            ? (area.knowledgePoints ? area.knowledgePoints.length : 0) 
-            : (area.processes ? area.processes.length : 0);
-        return acc + count;
-    }, 0);
-    const masteredCount = masteredProcesses.size;
+    const area = pmbokData.find(a => a.id === currentAreaId);
+    if (!area) return;
+    
+    const totalProcesses = area.type === 'knowledge'
+        ? (area.knowledgePoints ? area.knowledgePoints.length : 0)
+        : (area.processes ? area.processes.length : 0);
+    
+    const areaSet = masteredProcesses.get(currentAreaId) || new Set();
+    const masteredCount = areaSet.size;
     const percentage = totalProcesses > 0 ? Math.round((masteredCount / totalProcesses) * 100) : 0;
     
     const progress = document.getElementById('mastery-progress');
@@ -2554,20 +2599,32 @@ function findTermOccurrences(term) {
 }
 
 // 默写模式校验逻辑
-window.checkRecitation = function(processId) {
+function checkRecitation(processId) {
+    // 检查卡片是否存在
     const card = document.getElementById(`card-${processId}`);
-    const area = pmbokData.find(a => a.processes.some(p => p.id === processId));
+    if (!card) return;
+    
+    // 检查数据是否存在
+    const area = pmbokData.find(a => a && a.processes && a.processes.some(p => p.id === processId));
+    if (!area) return;
+    
     const process = area.processes.find(p => p.id === processId);
+    if (!process) return;
     
     let totalItems = 0;
     let correctCount = 0;
 
+    // 清除之前的结果
     card.querySelectorAll('.recite-input').forEach(input => input.classList.remove('recite-result-correct', 'recite-result-wrong'));
     card.querySelectorAll('.recite-correct-answer').forEach(el => {
         el.classList.add('hidden');
         el.innerHTML = '';
     });
     card.querySelectorAll('.recite-missing-list').forEach(el => {
+        el.classList.add('hidden');
+        el.innerHTML = '';
+    });
+    card.querySelectorAll('.recite-section-stats').forEach(el => {
         el.classList.add('hidden');
         el.innerHTML = '';
     });
@@ -2586,7 +2643,8 @@ window.checkRecitation = function(processId) {
         });
 
         const inputs = Array.from(card.querySelectorAll(`.recite-input[data-type="${type}"]`));
-        totalItems += expectedRaw.length;
+        const sectionTotal = expectedRaw.length;
+        let sectionCorrect = 0;
 
         inputs.forEach(inputEl => {
             const rawValue = (inputEl.value || '').toString().trim();
@@ -2595,28 +2653,66 @@ window.checkRecitation = function(processId) {
             const tokens = splitReciteTerms(rawValue);
             if (!tokens.length) return;
 
-            let allMatched = true;
-            let anyMatched = false;
-
+            // 对用户输入的答案进行处理，与正确答案进行集合比较
+            const userAnswers = new Set();
             tokens.forEach(token => {
                 const key = normalizeText(token);
-                if (!key) return;
-                const left = expectedCounts.get(key) || 0;
-                if (left > 0) {
-                    expectedCounts.set(key, left - 1);
-                    correctCount++;
-                    anyMatched = true;
-                } else {
+                if (key) userAnswers.add(key);
+            });
+
+            // 创建副本用于检查（不影响原始计数）
+            const checkCounts = new Map(expectedCounts);
+
+            // 检查用户输入的每个答案是否在正确答案中
+            let allMatched = true;
+            userAnswers.forEach(key => {
+                if (!checkCounts.has(key) || checkCounts.get(key) === 0) {
                     allMatched = false;
                 }
             });
 
-            if (anyMatched && allMatched) {
+            // 检查是否所有正确答案都被匹配
+            let allExpectedMatched = true;
+            checkCounts.forEach((count, key) => {
+                if (count > 0) {
+                    allExpectedMatched = false;
+                }
+            });
+
+            // 更新正确答案计数（使用原始 expectedCounts）
+            userAnswers.forEach(key => {
+                if (expectedCounts.has(key) && expectedCounts.get(key) > 0) {
+                    sectionCorrect++;
+                    expectedCounts.set(key, expectedCounts.get(key) - 1);
+                }
+            });
+
+            // 标记输入框的样式
+            if (userAnswers.size === 0) {
+            } else if (allMatched && allExpectedMatched) {
                 inputEl.classList.add('recite-result-correct');
             } else {
                 inputEl.classList.add('recite-result-wrong');
             }
         });
+
+        // 计算该板块的正确率
+        const sectionAccuracy = sectionTotal > 0 ? Math.round((sectionCorrect / sectionTotal) * 100) : 0;
+        
+        // 显示该板块的正确率
+        const sectionStatsEl = card.querySelector(`.recite-section-stats[data-type="${type}"]`);
+        if (sectionStatsEl) {
+            sectionStatsEl.classList.remove('hidden');
+            sectionStatsEl.innerHTML = `
+                <span class="badge ${sectionAccuracy === 100 ? 'badge-success' : 'badge-warning'} badge-xs font-black">
+                    ${sectionAccuracy}%
+                </span>
+            `;
+        }
+
+        // 计算总正确率
+        totalItems += sectionTotal;
+        correctCount += sectionCorrect;
 
         const missing = [];
         expectedCounts.forEach((count, key) => {
@@ -2637,20 +2733,25 @@ window.checkRecitation = function(processId) {
     });
 
     // 更新统计信息
-    const accuracy = Math.round((correctCount / totalItems) * 100);
+    const accuracy = totalItems > 0 ? Math.round((correctCount / totalItems) * 100) : 0;
     const statsEl = document.getElementById(`stats-${processId}`);
-    statsEl.classList.remove('hidden');
-    statsEl.innerHTML = `
-        <span class="badge ${accuracy === 100 ? 'badge-success' : 'badge-warning'} badge-sm font-black">
-            正确率 ${accuracy}%
-        </span>
-    `;
+    if (statsEl) {
+        statsEl.classList.remove('hidden');
+        statsEl.innerHTML = `
+            <span class="badge ${accuracy === 100 ? 'badge-success' : 'badge-warning'} badge-sm font-black">
+                正确率 ${accuracy}%
+            </span>
+        `;
+    }
 
     // 禁用输入
     card.querySelectorAll('.recite-input').forEach(input => input.disabled = true);
-};
 
-window.resetRecitation = function(processId) {
+    // 保存正确率到 localStorage
+    saveRecitationAccuracy(processId, accuracy, correctCount, totalItems);
+}
+
+function resetRecitation(processId) {
     const card = document.getElementById(`card-${processId}`);
     card.querySelectorAll('.recite-input').forEach(input => {
         input.value = '';
@@ -2666,7 +2767,50 @@ window.resetRecitation = function(processId) {
         el.innerHTML = '';
     });
     document.getElementById(`stats-${processId}`).classList.add('hidden');
-};
+}
+
+function saveRecitationAccuracy(processId, accuracy, correctCount, totalItems) {
+    const data = {
+        accuracy: accuracy,
+        correctCount: correctCount,
+        totalItems: totalItems,
+        timestamp: Date.now()
+    };
+    localStorage.setItem(`recitation_accuracy_${processId}`, JSON.stringify(data));
+    localStorage.setItem('last_recitation_accuracy', JSON.stringify({
+        processId: processId,
+        accuracy: accuracy,
+        correctCount: correctCount,
+        totalItems: totalItems,
+        timestamp: Date.now()
+    }));
+    updateAccuracyDisplay();
+}
+
+function loadRecitationAccuracy(processId) {
+    const data = localStorage.getItem(`recitation_accuracy_${processId}`);
+    return data ? JSON.parse(data) : null;
+}
+
+function updateAccuracyDisplay() {
+    const lastData = localStorage.getItem('last_recitation_accuracy');
+    const display = document.getElementById('accuracy-display');
+    const progress = document.getElementById('accuracy-progress');
+    const text = document.getElementById('accuracy-text');
+    
+    if (!display || !progress || !text) return;
+    
+    if (!lastData) {
+        progress.value = 0;
+        text.textContent = '暂无记录';
+        return;
+    }
+    
+    const data = JSON.parse(lastData);
+    const accuracy = data.accuracy || 0;
+    progress.value = accuracy;
+    text.textContent = `${accuracy}%`;
+}
 
 function splitReciteTerms(text) {
     return (text || '')
@@ -2686,7 +2830,7 @@ function normalizeText(text) {
         .replace(/相关方/g, '干系人')
         .replace(/制定/g, '制订')
         .replace(/[和及]/g, '与')
-        .replace(/[\s\p{P}]/gu, '') // 去除所有空白字符、中英文标点符号
+        .replace(/[\s\.,，;；:：!！\-\_\(\)（）\[\]\{\}\"\'\`]/g, '') // 去除常见空白字符和标点符号
         .toLowerCase() // 转换为小写（针对可能存在的英文术语）
         .trim();
     return s;
@@ -2695,6 +2839,9 @@ function normalizeText(text) {
 // 启动
 window.switchArea = switchArea;
 window.toggleMastery = toggleMastery;
+window.checkRecitation = checkRecitation;
+window.resetRecitation = resetRecitation;
+window.updateAccuracyDisplay = updateAccuracyDisplay;
 window.filterTextbookToc = function(event) {
     const q = (event?.target?.value || '').toString().trim().toLowerCase();
     const items = document.querySelectorAll('[data-toc-text]');

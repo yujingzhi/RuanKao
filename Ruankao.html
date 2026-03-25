@@ -97,7 +97,18 @@
                 </div>
 
                 <div class="flex-none gap-2 lg:gap-6">
-                    <div class="flex items-center recitation-hide">
+                    <!-- 默写模式 -->
+                    <div class="flex items-center">
+                        <label class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-base-200 transition-colors" title="默写模式">
+                            <div class="w-8 h-8 rounded-lg bg-warning/10 flex items-center justify-center">
+                                <i class="fa-solid fa-brain text-warning"></i>
+                            </div>
+                            <span class="text-sm font-bold opacity-70 hidden sm:inline">默写模式</span>
+                            <input type="checkbox" id="reciteModeToggle" class="toggle toggle-primary toggle-sm" />
+                        </label>
+                    </div>
+                    
+                    <div class="flex items-center">
                         <button id="knowledgeIndexBtn" class="btn btn-ghost btn-circle" aria-label="知识点索引">
                             <i class="fa-solid fa-book text-xl text-primary"></i>
                         </button>
@@ -120,6 +131,15 @@
                         <div class="flex items-center gap-2">
                             <progress id="mastery-progress" class="progress progress-primary w-24 h-1.5" value="0" max="100"></progress>
                             <span id="mastery-text" class="text-[10px] font-black">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- 正确率显示 -->
+                    <div id="accuracy-display" class="hidden md:flex flex-col items-end mr-2 recitation-hide">
+                        <span class="text-[10px] font-bold opacity-40 uppercase tracking-widest mb-1">正确率</span>
+                        <div class="flex items-center gap-2">
+                            <progress id="accuracy-progress" class="progress progress-success w-24 h-1.5" value="0" max="100"></progress>
+                            <span id="accuracy-text" class="text-[10px] font-black">暂无记录</span>
                         </div>
                     </div>
                 </div>
@@ -174,19 +194,7 @@
                     <!-- 动态加载导航项 -->
                 </ul>
 
-                <div class="p-6 border-t border-base-300 bg-base-200/50">
-                    <div class="form-control bg-base-100 rounded-2xl p-4 shadow-sm border border-base-300">
-                        <label class="label cursor-pointer justify-between py-0">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-8 h-8 rounded-lg bg-warning/10 flex items-center justify-center">
-                                    <i class="fa-solid fa-brain text-warning"></i>
-                                </div>
-                                <span class="text-sm font-bold opacity-70">默写模式</span>
-                            </div>
-                            <input type="checkbox" id="reciteModeToggle" class="toggle toggle-primary toggle-sm" />
-                        </label>
-                    </div>
-                </div>
+
             </div>
         </div>
     </div>
