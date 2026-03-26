@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>软考高项（第四版）- ITTO 考点地图</title>
-    <!-- 引入 Tailwind CSS & DaisyUI -->
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.2/dist/full.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 DaisyUI & Tailwind CSS -->
+    <link href="css/daisyui.min.css" rel="stylesheet" type="text/css" />
+    <script src="js/tailwindcss.min.js"></script>
     <!-- 引入 FontAwesome 图标 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/fontawesome.min.css">
     <!-- 引入自定义样式 -->
     <link rel="stylesheet" href="css/style.css">
     <script>
@@ -112,6 +112,59 @@
                         <button id="knowledgeIndexBtn" class="btn btn-ghost btn-circle" aria-label="知识点索引">
                             <i class="fa-solid fa-book text-xl text-primary"></i>
                         </button>
+                    </div>
+
+                    <!-- 角色切换 -->
+                    <div class="dropdown dropdown-end">
+                        <label tabindex="0" class="btn btn-ghost btn-circle flex items-center gap-2">
+                            <div id="current-role-avatar" class="avatar placeholder">
+                                <div class="bg-secondary text-secondary-content rounded-lg w-8 h-8">
+                                    <i class="fa-solid fa-user text-sm"></i>
+                                </div>
+                            </div>
+                            <span id="current-role-name" class="text-sm font-bold hidden sm:inline">赵</span>
+                        </label>
+                        <ul tabindex="0" class="dropdown-content z-[100] menu p-2 shadow-lg bg-base-100 rounded-box w-52 border border-base-300 mt-2">
+                            <li class="menu-title px-4 py-2 text-xs font-bold uppercase tracking-widest opacity-50">
+                                <span>选择学习角色</span>
+                            </li>
+                            <li><a id="role-zhao" class="role-option active flex items-center gap-3 px-4 py-3 active:bg-primary/10 rounded-lg mb-1" data-role="zhao">
+                                <div class="avatar placeholder">
+                                    <div class="bg-primary text-primary-content rounded-lg w-10 h-10">
+                                        <i class="fa-solid fa-user text-lg"></i>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-start">
+                                    <span class="font-bold text-base">赵</span>
+                                    <span class="text-xs opacity-60">角色1</span>
+                                </div>
+                                <div class="ml-auto check-icon"><i class="fa-solid fa-check text-primary"></i></div>
+                            </a></li>
+                            <li><a id="role-yu" class="role-option flex items-center gap-3 px-4 py-3 hover:bg-primary/10 rounded-lg mb-1" data-role="yu">
+                                <div class="avatar placeholder">
+                                    <div class="bg-emerald-500 text-emerald-50 rounded-lg w-10 h-10">
+                                        <i class="fa-solid fa-user text-lg"></i>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-start">
+                                    <span class="font-bold text-base">于</span>
+                                    <span class="text-xs opacity-60">角色2</span>
+                                </div>
+                                <div class="ml-auto check-icon hidden"><i class="fa-solid fa-check text-primary"></i></div>
+                            </a></li>
+                            <li><a id="role-ren" class="role-option flex items-center gap-3 px-4 py-3 hover:bg-primary/10 rounded-lg mb-1" data-role="ren">
+                                <div class="avatar placeholder">
+                                    <div class="bg-orange-500 text-orange-50 rounded-lg w-10 h-10">
+                                        <i class="fa-solid fa-user text-lg"></i>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-start">
+                                    <span class="font-bold text-base">任</span>
+                                    <span class="text-xs opacity-60">角色3</span>
+                                </div>
+                                <div class="ml-auto check-icon hidden"><i class="fa-solid fa-check text-primary"></i></div>
+                            </a></li>
+                        </ul>
                     </div>
 
                     <!-- 白天黑夜切换 -->

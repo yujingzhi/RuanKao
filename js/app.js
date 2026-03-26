@@ -4,6 +4,13 @@ import { getKnowledgeDashboardRenderer } from './renderers/registry.js';
 // 核心变量池
 let currentAreaId = 'integration';
 const masteredProcesses = new Map(); // 存储已掌握的过程ID，按章节区分
+let currentRole = 'zhao'; // 当前角色，默认为赵
+
+const ROLES = {
+    zhao: { name: '赵', color: 'primary', icon: 'fa-solid fa-user' },
+    yu: { name: '于', color: 'emerald-500', icon: 'fa-solid fa-user' },
+    ren: { name: '任', color: 'orange-500', icon: 'fa-solid fa-user' }
+};
 
 const knowledgeIndex = [];
 
@@ -34,6 +41,11 @@ const themeStyles = {
 
 // 初始化应用
 function initApp() {
+    // 加载保存的角色
+    loadCurrentRole();
+    loadMasteredData();
+    loadRecitationData();
+    
     renderSidebar();
     renderArea(currentAreaId);
     initTheme();
@@ -41,6 +53,7 @@ function initApp() {
     initKnowledgeIndexUI();
     initKnowledgePanelUI();
     updateAccuracyDisplay();
+    initRoleSwitcher();
     
     // 监听默写模式切换
     document.getElementById('reciteModeToggle').addEventListener('change', function(e) {
@@ -205,6 +218,69 @@ function initTheme() {
     const savedTheme = localStorage.getItem('ruankao-theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
     document.getElementById('themeToggle').checked = (savedTheme === 'dark');
+}
+
+// 角色切换相关函数
+function initRoleSwitcher() {
+    document.querySelectorAll('.role-option').forEach(option => {
+        option.addEventListener('click', function(e) {
+            e.preventDefault();
+            const role = this.getAttribute('data-role');
+            if (role && role !== currentRole) {
+                switchRole(role);
+            }
+        });
+    });
+    updateRoleUI();
+}
+
+function switchRole(newRole) {
+    if (!ROLES[newRole]) return;
+    
+    currentRole = newRole;
+    saveCurrentRole();
+    loadMasteredData();
+    loadRecitationData();
+    updateRoleUI();
+    updateProgress();
+    updateAccuracyDisplay();
+    renderArea(currentAreaId);
+}
+
+function saveCurrentRole() {
+    localStorage.setItem('ruankao-current-role', currentRole);
+}
+
+function loadCurrentRole() {
+    const savedRole = localStorage.getItem('ruankao-current-role');
+    if (savedRole && ROLES[savedRole]) {
+        currentRole = savedRole;
+    }
+}
+
+function updateRoleUI() {
+    const role = ROLES[currentRole];
+    if (!role) return;
+    
+    const avatarEl = document.getElementById('current-role-avatar');
+    const nameEl = document.getElementById('current-role-name');
+    
+    if (avatarEl) {
+        avatarEl.querySelector('div').className = `bg-${role.color} text-${role.color}-content rounded-lg w-8 h-8`;
+        avatarEl.querySelector('i').className = role.icon;
+    }
+    if (nameEl) {
+        nameEl.textContent = role.name;
+    }
+    
+    document.querySelectorAll('.role-option').forEach(option => {
+        const isActive = option.getAttribute('data-role') === currentRole;
+        option.classList.toggle('bg-primary/10', isActive);
+        const checkIcon = option.querySelector('.check-icon');
+        if (checkIcon) {
+            checkIcon.classList.toggle('hidden', !isActive);
+        }
+    });
 }
 
 // 渲染左侧导航
@@ -1909,11 +1985,12 @@ function saveMasteredData() {
     masteredProcesses.forEach((set, areaId) => {
         data[areaId] = Array.from(set);
     });
-    localStorage.setItem('mastered_data', JSON.stringify(data));
+    localStorage.setItem(`mastered_data_${currentRole}`, JSON.stringify(data));
 }
 
 function loadMasteredData() {
-    const data = localStorage.getItem('mastered_data');
+    masteredProcesses.clear();
+    const data = localStorage.getItem(`mastered_data_${currentRole}`);
     if (data) {
         const parsed = JSON.parse(data);
         Object.keys(parsed).forEach(areaId => {
@@ -2776,8 +2853,8 @@ function saveRecitationAccuracy(processId, accuracy, correctCount, totalItems) {
         totalItems: totalItems,
         timestamp: Date.now()
     };
-    localStorage.setItem(`recitation_accuracy_${processId}`, JSON.stringify(data));
-    localStorage.setItem('last_recitation_accuracy', JSON.stringify({
+    localStorage.setItem(`recitation_accuracy_${currentRole}_${processId}`, JSON.stringify(data));
+    localStorage.setItem(`last_recitation_accuracy_${currentRole}`, JSON.stringify({
         processId: processId,
         accuracy: accuracy,
         correctCount: correctCount,
@@ -2788,12 +2865,16 @@ function saveRecitationAccuracy(processId, accuracy, correctCount, totalItems) {
 }
 
 function loadRecitationAccuracy(processId) {
-    const data = localStorage.getItem(`recitation_accuracy_${processId}`);
+    const data = localStorage.getItem(`recitation_accuracy_${currentRole}_${processId}`);
     return data ? JSON.parse(data) : null;
 }
 
+function loadRecitationData() {
+    updateAccuracyDisplay();
+}
+
 function updateAccuracyDisplay() {
-    const lastData = localStorage.getItem('last_recitation_accuracy');
+    const lastData = localStorage.getItem(`last_recitation_accuracy_${currentRole}`);
     const display = document.getElementById('accuracy-display');
     const progress = document.getElementById('accuracy-progress');
     const text = document.getElementById('accuracy-text');
